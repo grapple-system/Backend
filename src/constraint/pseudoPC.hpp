@@ -8,8 +8,15 @@
 #ifndef CONSTRAINT_PSEUDOPC_HPP_
 #define CONSTRAINT_PSEUDOPC_HPP_
 
+#include <list>
 
+class PseudoPC {
+private:
+  List<int> constraints;
 
+public:
+  PseudoPC() {}
+};
 
 
 #endif /* CONSTRAINT_PSEUDOPC_HPP_ */

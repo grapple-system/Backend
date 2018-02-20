@@ -9,7 +9,9 @@
 #define CONSTRAINT_REALPC_HPP_
 
 
-
+class RealPC {
+  realPC() {}
+};
 
 
 #endif /* CONSTRAINT_REALPC_HPP_ */
