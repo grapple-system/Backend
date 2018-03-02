@@ -19,9 +19,9 @@ int main(int argc, char *argv[])
 	if (!c.ddm.load_DDM(c.getGraphFile() + ".ddm"))
 		cout << "couldn't load DDM" << endl;
 
-	if (!c.vit.loadFromFile(c.getGraphFile() + ".vit")) 
+	if (!c.vit.loadFromFile(c.getGraphFile() + ".vit"))
 		cout << "couldn't load VIT" << endl;
-	
+
 
 	// PREPROCESSING
 	prepTimer.startTimer();
@@ -31,6 +31,8 @@ int main(int argc, char *argv[])
 		run_preprocessing(c);
 	}
 
+	// LOAD SYMBOLIC EXECUTION GRAPH
+	c.initialzeSEG();
 	prepTimer.endTimer();
 	// COMPUTATION
 	compTimer.startTimer();

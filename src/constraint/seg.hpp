@@ -17,8 +17,9 @@ private:
 
 public:
   SEGraph() {}
+  SEGraph(std::string filename);
 
-  boolean solve(RealPC pathConst);  // place holder for constraint solver
+  bool solve(RealPC pathConst);  // place holder for constraint solver
 };
 
 

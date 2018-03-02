@@ -52,13 +52,13 @@ long run_computation(Context &context)
 	while (context.ddm.nextPartitionPair(p, q))
 	{
 		cout << "##### STARTING ROUND " << ++roundNo << " #####" << endl;
-		newRoundEdges = 0; 
+		newRoundEdges = 0;
 		loadTimer.startTimer();
 		context.ddm.save_DDM(name.c_str());
 		pp = NULL, qp = NULL;
 		//check parts
 		for (it = parts.begin(); it != parts.end(); ) {
-			context.ddm.adjustRow((*(*it)).getID());	
+			context.ddm.adjustRow((*(*it)).getID());
 			if ((*(*it)).getID() != p && (*(*it)).getID() != q) {
 				cout << "PARTITION :" << (*(*it)).getID() << " IS SAVED" << endl;
 				Partition::writeToFile(*(*it), false, context);
@@ -100,7 +100,7 @@ long run_computation(Context &context)
 		cout << "P =" << p << " Q =" << q << endl;
 		cout << qp->getNumVertices() << endl;
 		vector<Vertex> &part1 = (*pp).getData(), &part2 = (*qp).getData();
-		
+
 		cout << (*pp).getID() << endl;
 		cout << "OG NUM EDGES: " << ((*pp).getNumEdges() + (*qp).getNumEdges()) << endl;
 		cout << "NUM VERTECES: " << part1.size() + part2.size() << endl;
@@ -111,7 +111,7 @@ long run_computation(Context &context)
 
 		LoadedVertexInterval intervals[2] = {LoadedVertexInterval{p}, LoadedVertexInterval{q}};
 		initLVIs(intervals, part1, part2);					// Initialize the Loaded Vertex Intervals
-		
+
 		cout << "== COMP START ==" << endl;
 		compTimer.startTimer();
 		computeEdges(compsets, setSize, intervals, context, sizeLim, ioServ);
@@ -193,7 +193,7 @@ long run_computation(Context &context)
 }
 
 /**
- * perform computation on list of ComputationSets until no more new edges can be added or 
+ * perform computation on list of ComputationSets until no more new edges can be added or
  * the newRoundEdges would exceed the memory Budget
  *
  * @param compsets
@@ -207,7 +207,7 @@ void computeEdges(ComputationSet compsets[], int setSize, LoadedVertexInterval i
 
 	int segsiz = setSize / 64 + 1;
 	int nSegs = setSize / segsiz + 1;
-	
+
 	do {
 		cout << "===== STARTING ITERATION " << ++iterNo << endl;
 		iterTimer.startTimer();
@@ -231,7 +231,7 @@ void computeEdges(ComputationSet compsets[], int setSize, LoadedVertexInterval i
 		cout << "NEW EDGES TOTAL: " << newRoundEdges << endl;
 		cout << "ITERATER  TIME   " << iterTimer.hmsFormat() << endl << endl;
 
-		if (newRoundEdges > sizeLim || newRoundEdges + newIterEdges > sizeLim) break;	// if the num of new edges added this round exceeds the limit
+		if (newRoundEdges > sizeLim || newRoundEdges + newIterEdges > sizeLim) return;	// if the num of new edges added this round exceeds the limit
 																						// found using the mem budget, end the round
 	} while (newIterEdges > 0);
 }
@@ -239,7 +239,7 @@ void computeEdges(ComputationSet compsets[], int setSize, LoadedVertexInterval i
 /**
  * compute the new edges of each vertex simultaneously
  *
- * 
+ *
  */
 void computeOneIteration(ComputationSet compsets[], int setSize, int segsiz, int nSegs, LoadedVertexInterval intervals[], Context &context, boost::asio::io_service &ioServ)
 {
@@ -248,7 +248,7 @@ void computeOneIteration(ComputationSet compsets[], int setSize, int segsiz, int
 	numFinished = 0;
 	compFinished = false;
 
-	
+
 	for (int i = 0; i < nSegs; i++)
 	{
 		lower = i * segsiz;

@@ -40,9 +40,9 @@ bool Loader::loadPartition(partitionid_t id, Partition &p, bool readable, Contex
 					cout << "linecount value = " << linecounts << " : " << str <<  endl;
 					break;
 				}
-				
+
 				linecounts++;
-				
+
 				p_token = strtok_r(buf, "\t", &context);
 				if (p_token == NULL) {
 					cout << "2nd check NULL ptoken linecount value = " << linecounts << " : " << str << endl;
@@ -77,7 +77,7 @@ bool Loader::loadPartition(partitionid_t id, Partition &p, bool readable, Contex
 					assert(p_token != " ", "space token" );
 					#endif
 					//assert(p_token != "\s", "anyspace token" );
-					// you don't have to do this right? you know which vector to push 
+					// you don't have to do this right? you know which vector to push
 					// one vector has only elements whose index is odd, the other, even
 					/*if (i % 2 ==  1) {
 						outEdgeValues.push_back(atoi(p_token));
@@ -94,7 +94,8 @@ bool Loader::loadPartition(partitionid_t id, Partition &p, bool readable, Contex
 						i = 0;
 					}
 				}
-				Vertex v(src, outEdges, outEdgeValues);
+				std::vector<PseudoPC> stuff;		// FILLER TO MAKE THIS COMPILE!
+				Vertex v(src, outEdges, outEdgeValues, stuff);
 				data.push_back(v);
 			}
 			p.setID(id);
@@ -147,7 +148,8 @@ bool Loader::loadPartition(partitionid_t id, Partition &p, bool readable, Contex
 				outEdgeValues.push_back(label);
 				}*/
 
-				Vertex v(src, outEdges, outEdgeValues);
+				vector<PseudoPC> moreStuff;			// FILLER TO MAKE COMPILE
+				Vertex v(src, outEdges, outEdgeValues, moreStuff);
 				data.push_back(v);
 			}
 			p.setID(id);

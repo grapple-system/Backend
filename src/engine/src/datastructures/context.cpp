@@ -18,6 +18,10 @@ Context::Context(int argc, char** argv) {
 			filePath.insert(std::make_pair(INPUT_GRAPH_FILE_KEY, context));
 			cout << "INPUT_GRAPH_FILE_KEY =" << context << endl;
 		}
+		else if (!strncmp(argv[i], SEG_FILE_KEY.c_str(), sizeof(argv[i]))) {
+			filePath.insert(std::make_pair(SEG_FILE_KEY, context));
+			cout << "SEG_FILE_KEY = " << context << endl;
+		}
 		else if (!strncmp(argv[i], GRAMMAR_FILE_KEY.c_str(), sizeof(argv[i]))) {
 			filePath.insert(std::make_pair(GRAMMAR_FILE_KEY, context));
 			cout << "GRAMMAR_FILE_KEY =" << context << endl;
@@ -60,6 +64,10 @@ Context::Context(int argc, char** argv) {
 		assert(false, "Need a file path ");
 }
 
+void Context::initialzeSEG() {
+	seg = SEGraph(filePath[SEG_FILE_KEY]);
+}
+
 unsigned long long int Context::getMemBudget() {
 	return memBudget;
 }
@@ -84,6 +92,9 @@ string Context::getGrammarFile() {
 	return filePath[GRAMMAR_FILE_KEY];
 }
 
+string Context::getSEGFile() {
+	return filePath[SEG_FILE_KEY];
+}
 
 bool Context::getInsertFlag() {
 	return flags[INSERT_SORT_FLAG];

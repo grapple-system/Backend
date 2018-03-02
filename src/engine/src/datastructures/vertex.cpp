@@ -1,11 +1,13 @@
 #include "vertex.h"
 
 // Constructors
-Vertex::Vertex(int id, vector<int> outEdges, vector<char> outEdgeValues)
+Vertex::Vertex(vertexid_t id, vector<vertexid_t> outEdges, vector<label_t> outEdgeValues, vector<PseudoPC> constraints, vector<string> tempstrs)
 {
 	this->id = id;
 	this->outEdges = outEdges;
 	this->outEdgeValues = outEdgeValues;
+	this->constraints = constraints;
+	this->temp = tempstrs;
 
 	numOutEdges = outEdges.size();
 }

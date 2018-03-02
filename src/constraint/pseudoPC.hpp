@@ -8,14 +8,17 @@
 #ifndef CONSTRAINT_PSEUDOPC_HPP_
 #define CONSTRAINT_PSEUDOPC_HPP_
 
+#include <string>
 #include <list>
 
-class PseudoPC {
-private:
-  List<int> constraints;
+
+class PseudoPC
+{
+    List<int> constrRep;        // using int as a temporary filler
 
 public:
-  PseudoPC() {}
+    PseudoPC() {}
+    PseudoPC(std::string constr);
 };
 
 

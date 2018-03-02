@@ -19,6 +19,11 @@
 #include "../datastructures/context.h"
 #include "../datastructures/partition.h"
 
+/**
+ * PSA includes
+ */
+//#include "../../../constraint/pseudoPC.hpp"
+#include "pseudoPC.hpp"
 
 
 class Preproc_new {
@@ -33,8 +38,9 @@ private:
 	set<char> eRules;
 	vector<string> mapInfo;
 	Vertex **vertices;
+	string ***constraints;
 	Vertex *partBuf;
-	
+
 	//Partition *p;
 
 
@@ -46,7 +52,7 @@ public:
 
 	void saveData(Context &context);
 	void savePartChunk(Context &context, int partNum);
-	
+
 	void mergePart(Context &context);
 	void loadPartChunk(Context &context, int pID);
 	void addErules(Context &context, int pID);

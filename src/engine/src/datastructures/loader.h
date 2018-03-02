@@ -14,9 +14,9 @@
 class Loader {
 private:
 public:
-	//if user wants to load the partition from the disk 
+	//if user wants to load the partition from the disk
 	//use this function, id is partition id, p is where you going to save on memory
-	//readable==true means text, and false means binary format 
+	//readable==true means text, and false means binary format
 	static bool loadPartition(partitionid_t id, Partition &p, bool readable, Context c);
 	//graphname
 		//graphname.partition.1.b

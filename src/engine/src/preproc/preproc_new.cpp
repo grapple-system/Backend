@@ -14,11 +14,11 @@ Preproc_new::Preproc_new(Context &context) {
 void Preproc_new::countNum(Context &context)
 {
 	FILE *fp;
-	string label;
+	string label, constrRep;
 	char buf[512];
 	char *p_token = NULL;
 	char *text = NULL;
-	char ctemp[10];
+	char ctemp[10], constrStr[1024];
 	int src, dst;
 	int temp = eRules.size();
 	dataSize = 0;
@@ -31,7 +31,7 @@ void Preproc_new::countNum(Context &context)
 		while (NULL != fgets(buf, sizeof(buf), fp)) {
 			p_token = strtok_r(buf, "\n", &text);
 			p_token = strtok_r(buf, "\t", &text);
-			count ++;
+			count++;
 			src = atoi(p_token);
 			if (src > dataSize)
 				dataSize = src;
@@ -52,7 +52,7 @@ void Preproc_new::countNum(Context &context)
 	//count data per src
 	fp = fopen(context.getGraphFile().c_str(), "r");
 	if (fp != NULL) {
-		while (fscanf(fp, "%d\t%d\t%s\n", &src, &dst, ctemp) != EOF) {
+		while (fscanf(fp, "%d\t%d\t%s\t%s\n", &src, &dst, ctemp, constrStr) != EOF) {
 			dataCount[src]++;
 			count++;
 		}
@@ -81,7 +81,7 @@ void Preproc_new::setVIT(Context &context)
 	int i = 0, j = 0;
 	int temp = eRules.size();
 	unsigned long long int mSize = 0;
-	
+
 	mSize = (unsigned long long int)numVertex * (unsigned long long int)423 + (unsigned long long int)count*(unsigned long long int)8;
 
 
@@ -152,11 +152,9 @@ void Preproc_new::setVIT(Context &context)
 }
 
 void Preproc_new::saveData(Context &context) {
-	
-
 	FILE *fp;
-	string label;
-	char ctemp[10];
+	string label, constrRep;
+	char ctemp[10], constrBuf[1024];
 	int src, dst;
 	int temp;
 	int size = context.getNumPartitions();
@@ -164,12 +162,14 @@ void Preproc_new::saveData(Context &context) {
 	unsigned long long int mSize = 0;
 	int start, end;
 	vertices = new Vertex *[size];
+	constraints = new string *[size];
 	vector<int> &vitDegree = context.vit.getDegree();
 
 	for (int i = 0; i < size; i++) {
 		vertices[i] = NULL;
+		constraints[i] = NULL;
 	}
-	
+
 	numPartBuf = new int[size];
 
 	for (int i = 0; i < size; i++) {
@@ -179,18 +179,23 @@ void Preproc_new::saveData(Context &context) {
 
 	fp = fopen(context.getGraphFile().c_str(), "r");
 	if (fp != NULL) {
-		while (fscanf(fp, "%d\t%d\t%s\n", &src, &dst, ctemp) != EOF) {
-
+		while (fscanf(fp, "%d\t%d\t%s\t", &src, &dst, ctemp) != EOF) {
+			bool notEOL = true;
+			while (notEOL) {
+				fgets(constrBuf, 1024, fp);
+				constrRep += constrBuf;
+				if (constrRep[constrRep.size() - 1] == '\n') notEOL = false;
+			}
 			temp = context.vit.partition(src);
 			start = context.vit.getStart(temp);
 			end = context.vit.getEnd(temp);
 			//x = 207 y = 36
 			//memory allocate when the size is not over the membudget
-			
+
 			if (vertices[temp] == NULL) {
 				tempSize = end - start + 1;
 				//if over size is over the membudget then save and delete the exist one.
-			
+
 				if (mSize + tempSize * (unsigned long long int)207 + vitDegree[temp] * (unsigned long long int)36 > context.getMemBudget()) {
 					for (int i = 0; i < size; i++) {
 						if (vertices[i] != NULL) {
@@ -212,11 +217,12 @@ void Preproc_new::saveData(Context &context) {
 				//allocate the new one
 				Vertex * vTemp = new Vertex[tempSize];
 				vertices[temp] = vTemp;
-
 			}
-			Vertex *&vTemp = vertices[temp];
-			vector<vertexid_t> &outEdges = vTemp[src-start].getOutEdges();
-			vector<label_t> &outEdgeValues = vTemp[src-start].getOutEdgeValues();
+
+			Vertex *&vTemp = vertices[temp];		// get the current vertex's partition
+			vector<vertexid_t> &outEdges = vTemp[src-start].getOutEdges();					// get current vert edges
+			vector<label_t> &outEdgeValues = vTemp[src-start].getOutEdgeValues();			// get current vert labels
+			vector<string> &tempStrs = vTemp[src-start].getTemp();
 			label += ctemp;
 			outEdges.push_back(dst);
 			for (int i = 1; i < mapInfo.size(); i++) {
@@ -235,6 +241,7 @@ void Preproc_new::saveData(Context &context) {
 
 			numPartBuf[temp]++;
 			label = "";
+			constrRep.clear();
 		}
 		fclose(fp);
 		for (int i = 0; i < size; i++) {
@@ -262,7 +269,7 @@ void Preproc_new::saveData(Context &context) {
 	int size = context.getNumPartitions();
 	partBuf = new Vertex[dataSize];
 	numPartBuf = new int[size];
-	
+
 	for (int i = 0; i < size; i++) {
 		numPartBuf[i] = 0;
 	}
@@ -318,7 +325,7 @@ void Preproc_new::savePartChunk(Context & context, int pID)
 	int k = 0;
 
 	char label;
-	int start, end;			
+	int start, end;
 	start = context.vit.getStart(pID);
 	end = context.vit.getEnd(pID);
 
@@ -340,11 +347,20 @@ void Preproc_new::savePartChunk(Context & context, int pID)
 			fwrite((const void*)& degree, sizeof(int), 1, f);
 			vector<vertexid_t> &outEdges = vTemp[i - start].getOutEdges();
 			vector<label_t> &outEdgeValues = vTemp[i - start].getOutEdgeValues();
-			
+
 			for (int j = 0; j < outEdges.size(); j++) {
 				fwrite((const void*)& outEdges[j], sizeof(int), 1, f);
 				fwrite((const void*)& outEdgeValues[j], sizeof(char), 1, f);
 			}
+
+			vector<string> &tempStrs = vTemp[i - start].getTemp();
+			int currsiz;
+			for (int n = 0; n < tempStrs.size(); n++) {
+				currsiz = tempStrs.size();
+				fwrite((const void*) &currsiz, sizeof(int), 1, f);
+				fwrite((const void*) tempStrs[n].c_str(), sizeof(char), currsiz, f);
+			}
+
 			vTemp[i - start].clearVector();
 		}
 		fclose(f);
@@ -362,7 +378,7 @@ void Preproc_new::savePartChunk(Context &context, int pID) {
 
 	int degree, dst;
 	int k = 0;
-	
+
 	char label;
 
 	str = std::to_string((long long)pID);
@@ -478,7 +494,6 @@ void Preproc_new::loadPartChunk(Context & context, int pID)
 				bbuf = (char *)malloc(temp);
 				fread(bbuf, temp, 1, f);
 				for (int j = 0; j < temp; j += 5) {
-
 					dst = *((int*)(bbuf + j));
 					label = *((char*)(bbuf + 4 + j));
 					outEdges.push_back(dst);
@@ -641,7 +656,7 @@ void Preproc_new::checkPart(Context & context, int pID)
 }
 /*
 void Preproc_new::checkPart(Context &context, int pID) {
-	
+
 	vector<vertexid_t>::iterator firstA, lastA, resultA;
 	vector<label_t>::iterator firstB, lastB, resultB;
 
@@ -649,7 +664,7 @@ void Preproc_new::checkPart(Context &context, int pID) {
 		vector<vertexid_t> &outEdges = partBuf[i].getOutEdges();
 		vector<label_t> &outEdgeValues = partBuf[i].getOutEdgeValues();
 
-		firstA = outEdges.begin(); 
+		firstA = outEdges.begin();
 		lastA = outEdges.end();
 		firstB = outEdgeValues.begin();
 		lastB = outEdgeValues.end();
@@ -697,7 +712,7 @@ void Preproc_new::savePart(Context & context, int pID)
 		numEdges += degree;
 		fwrite((const void*)& src, sizeof(int), 1, f);
 		fwrite((const void*)& degree, sizeof(int), 1, f);
-		
+
 		for (int k = 0; k < degree; k++) {
 			dst = vTemp[j-start].getOutEdge(k);
 			label = vTemp[j-start].getOutEdgeValue(k);

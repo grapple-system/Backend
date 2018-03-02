@@ -48,7 +48,7 @@ bool DDM::nextPartitionPair(partitionid_t &p, partitionid_t &q) {
 
   for (int i = 0; i < numPartition; ++i) {
 	  for (int j = i+1; j < numPartition; ++j) {
-		  if (i == j | (d_ddmMap[i][j] == 0 && d_ddmMap[j][i] == 0))
+		  if (i == j || (d_ddmMap[i][j] == 0 && d_ddmMap[j][i] == 0))
 			  continue;
 		  if (max < ddmMap[i][j] + ddmMap[j][i]) {
 			  max = ddmMap[i][j] + ddmMap[j][i];

@@ -24,7 +24,7 @@ using std::map;
 
 //#ifndef ASSERT
 //#define ASSERT
-//#endif 
+//#endif
 
 //#ifndef DEBUG
 //#define DEBUG
@@ -38,7 +38,7 @@ typedef std::string raw_label_t;
 typedef std::string string;
 
 // error codes
-enum Error 
+enum Error
 {
 	FOPEN, FCLOSE
 };
@@ -47,7 +47,7 @@ enum Error
 const int BytesPerVertexid = sizeof(vertexid_t);
 const int BytesPerLabel = sizeof(label_t);
 const int BytesPerPartitionid = sizeof(partitionid_t);
- 
+
 // keys for parameters
 const static string GRAP = "graph";
 const static string PART = "partition";
@@ -56,6 +56,7 @@ const static string HUMA = "human";
 
 const static string INPUT_GRAPH_FILE_KEY = "inputGraph";
 const static string GRAMMAR_FILE_KEY = "grammar";
+const static string SEG_FILE_KEY = "seg";
 const static string MEM_BUDGET_KEY = "memBudget";
 const static string NUM_THREADS_KEY = "numThreads";
 const static string NUM_PARTITION_KEY = "numPartitions";
@@ -79,9 +80,9 @@ const static string ALTER_SCHEDULE_FLAG = "alterSchedule";
              __FILE__, __LINE__, msg);       \
      exit(1); \
    }
-#else 
+#else
 #define assert(p,msg)
-#endif 
+#endif
 
 
 

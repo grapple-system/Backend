@@ -14,6 +14,7 @@
 #include "vit.h"
 #include "DDM.h"
 #include "../edgecomp/grammar.h"
+#include "../../../constraint/seg.hpp"
 
 class Context
 {
@@ -22,7 +23,7 @@ private:
 	map<string, unsigned int> parameters;
 	map<string, string> filePath;
 	map<string, bool> flags;
-	
+
 
 
 public:
@@ -30,11 +31,14 @@ public:
 	Grammar grammar;
 	VIT vit;
 	DDM ddm;
+	SEGraph seg;
 
 	//constructor
-	//user input format is memBudget=10 numPartitions=3 insertionSort=true 
+	//user input format is memBudget=10 numPartitions=3 insertionSort=true
 	//if user don't input data then default values are in these things
 	Context(int argc, char** argv);
+
+	void initialzeSEG();
 
 	//getters
 	unsigned long long int getMemBudget();
@@ -44,7 +48,7 @@ public:
 
 	string getGraphFile();
 	string getGrammarFile();
-
+	string getSEGFile();
 
 	bool getInsertFlag();
 	bool getAlterScheduleFlag();
