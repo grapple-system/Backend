@@ -25,7 +25,9 @@ class Vertex
 	// Constructors
 	Vertex() { numOutEdges = 0; }
 	Vertex(int id, int outDegree);
+	Vertex(vertexid_t id, vector<vertexid_t> outEdges, vector<label_t> outEdgeValues, vector<string> tempStrs);
 	Vertex(vertexid_t id, vector<vertexid_t> outEdges, vector<label_t> outEdgeValues, vector<PseudoPC> constraints);
+
 
 	// Getters
 	inline int getVertexID() { return id; }

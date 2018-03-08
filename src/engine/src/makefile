@@ -1,4 +1,4 @@
-CC=g++ -std=c++0x
+CC=g++ -std=c++0x -v
 
 #use path according to boost installation directory in user machine
 #export LD_LIBRARY_PATH=/home/aftab/Downloads/boost_1.62_installed/lib:$LD_LIBRARY_PATH
@@ -17,6 +17,8 @@ LOADER=datastructures/loader.cpp edgecomp/grammar.cpp
 DATASTRUCTS=datastructures/vertex.cpp datastructures/loadedvertexinterval.cpp datastructures/minset.cpp datastructures/partition.cpp datastructures/context.cpp datastructures/vit.cpp datastructures/DDM.cpp
 UTIL=../test/timer.cpp Library/Logger.cpp
 
+CONSTRAINT=../../constraint/pseudoPC.cpp ../../constraint/seg.cpp ../../constraint/realPC.cpp
+
 ##### build rules #####
-comp: dispatcher/graspan.cpp preproc/pseudoPC.cpp $(PREP) $(LOADER) $(COMPUTATION) $(DATASTRUCTS) $(UTIL)
-	$(CC) dispatcher/graspan.cpp preproc/pseudoPC.cpp $(PREP) $(LOADER) $(COMPUTATION) $(DATASTRUCTS) $(UTIL) -o ../bin/comp -O2 -ggdb -lboost_thread-mt -lpthread -lboost_system
+comp: dispatcher/graspan.cpp $(PREP) $(LOADER) $(COMPUTATION) $(DATASTRUCTS) $(UTIL) $(CONSTRAINT)
+	$(CC) dispatcher/graspan.cpp $(PREP) $(LOADER) $(COMPUTATION) $(DATASTRUCTS) $(UTIL) $(CONSTRAINT) -o ../bin/comp -O2 -ggdb -lboost_thread-mt -lpthread -lboost_system

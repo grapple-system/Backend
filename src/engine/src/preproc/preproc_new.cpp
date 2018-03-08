@@ -18,7 +18,7 @@ void Preproc_new::countNum(Context &context)
 	char buf[512];
 	char *p_token = NULL;
 	char *text = NULL;
-	char ctemp[10], constrStr[1024];
+	char ctemp[10], constrBuf[1024];
 	int src, dst;
 	int temp = eRules.size();
 	dataSize = 0;
@@ -28,13 +28,18 @@ void Preproc_new::countNum(Context &context)
 	//for malloc
 	fp = fopen(context.getGraphFile().c_str(), "r");
 	if (fp != NULL) {
-		while (NULL != fgets(buf, sizeof(buf), fp)) {
-			p_token = strtok_r(buf, "\n", &text);
-			p_token = strtok_r(buf, "\t", &text);
+		while (fscanf(fp, "%d\t%d\t%s\t", &src, &dst, ctemp) != EOF) {
 			count++;
-			src = atoi(p_token);
 			if (src > dataSize)
 				dataSize = src;
+
+			bool notEOL = true;
+			while (notEOL) {
+				fgets(constrBuf, 1024, fp);
+				constrRep += constrBuf;
+				if (constrRep[constrRep.size() - 1] == '\n') notEOL = false;
+			}
+			constrRep.clear();
 		}
 		fclose(fp);
 		dataSize++;
@@ -52,9 +57,16 @@ void Preproc_new::countNum(Context &context)
 	//count data per src
 	fp = fopen(context.getGraphFile().c_str(), "r");
 	if (fp != NULL) {
-		while (fscanf(fp, "%d\t%d\t%s\t%s\n", &src, &dst, ctemp, constrStr) != EOF) {
+		while (fscanf(fp, "%d\t%d\t%s\t", &src, &dst, ctemp) != EOF) {
 			dataCount[src]++;
 			count++;
+			bool notEOL = true;
+			while (notEOL) {
+				fgets(constrBuf, 1024, fp);
+				constrRep += constrBuf;
+				if (constrRep[constrRep.size() - 1] == '\n') notEOL = false;
+			}
+			constrRep.clear();
 		}
 		fclose(fp);
 	}
@@ -162,7 +174,6 @@ void Preproc_new::saveData(Context &context) {
 	unsigned long long int mSize = 0;
 	int start, end;
 	vertices = new Vertex *[size];
-	constraints = new string *[size];
 	vector<int> &vitDegree = context.vit.getDegree();
 
 	for (int i = 0; i < size; i++) {
@@ -184,7 +195,10 @@ void Preproc_new::saveData(Context &context) {
 			while (notEOL) {
 				fgets(constrBuf, 1024, fp);
 				constrRep += constrBuf;
-				if (constrRep[constrRep.size() - 1] == '\n') notEOL = false;
+				if (constrRep[constrRep.size() - 1] == '\n') {
+					constrRep[constrRep.size() - 1] = 0;	// replace newline w/ terminate
+					notEOL = false;
+				}
 			}
 			temp = context.vit.partition(src);
 			start = context.vit.getStart(temp);
@@ -225,6 +239,7 @@ void Preproc_new::saveData(Context &context) {
 			vector<string> &tempStrs = vTemp[src-start].getTemp();
 			label += ctemp;
 			outEdges.push_back(dst);
+			tempStrs.push_back(constrRep);
 			for (int i = 1; i < mapInfo.size(); i++) {
 				if (strcmp(label.c_str(), mapInfo[i].c_str()) == 0) {
 					outEdgeValues.push_back(i);
@@ -356,7 +371,7 @@ void Preproc_new::savePartChunk(Context & context, int pID)
 			vector<string> &tempStrs = vTemp[i - start].getTemp();
 			int currsiz;
 			for (int n = 0; n < tempStrs.size(); n++) {
-				currsiz = tempStrs.size();
+				currsiz = tempStrs[n].size();
 				fwrite((const void*) &currsiz, sizeof(int), 1, f);
 				fwrite((const void*) tempStrs[n].c_str(), sizeof(char), currsiz, f);
 			}
@@ -471,9 +486,9 @@ void Preproc_new::loadPartChunk(Context & context, int pID)
 
 	vector<vector<double> > &ddmMap = context.ddm.getDdmMap();
 	FILE *f;
-	string str, str2, name;
-	char label;
-	int src, degree, dst, temp;
+	string str, str2, name, constrStr;
+	char label, constrBuf[1024];
+	int src, degree, dst, temp, constrSiz;
 	int size, numVert = 0;
 	int i = 0;
 	char *bbuf;
@@ -491,6 +506,7 @@ void Preproc_new::loadPartChunk(Context & context, int pID)
 				numVert++;
 				vector<vertexid_t> &outEdges = vTemp[src-start].getOutEdges();
 				vector<label_t> &outEdgeValues = vTemp[src-start].getOutEdgeValues();
+				vector<string> &tempStrs = vTemp[src - start].getTemp();
 				bbuf = (char *)malloc(temp);
 				fread(bbuf, temp, 1, f);
 				for (int j = 0; j < temp; j += 5) {
@@ -500,6 +516,16 @@ void Preproc_new::loadPartChunk(Context & context, int pID)
 					outEdgeValues.push_back(label);
 				}
 				free(bbuf);
+
+				// READ in CONSTRAINT STRINGS
+				for (int n = 0; n < degree; n++) {
+					fread(&constrSiz, 4, 1, f);
+					bbuf = (char *) malloc(constrSiz);
+					constrStr += bbuf;
+					tempStrs.push_back(constrStr);
+					free(bbuf);
+				}
+
 				vTemp[src-start].setNumOutEdges(numVert);
 				//for ddm
 				if (pID != context.vit.partition(dst) && context.vit.partition(dst) != -1)
@@ -583,6 +609,7 @@ void Preproc_new::addErules(Context & context, int pID)
 		//		continue;
 		vector<vertexid_t> &outEdges = vTemp[i-start].getOutEdges();
 		vector<label_t> &outEdgeValues = vTemp[i-start].getOutEdgeValues();
+		vector<string> &tempStrs = vTemp[i-start].getTemp();
 
 		for (it_e = eRules.begin(); it_e != eRules.end(); it_e++) {
 			label = *it_e;
@@ -625,33 +652,42 @@ void Preproc_new::checkPart(Context & context, int pID)
 
 	vector<vertexid_t>::iterator firstA, lastA, resultA;
 	vector<label_t>::iterator firstB, lastB, resultB;
+	vector<string>::iterator firstC, lastC, resultC;
 
 	for (int i = context.vit.getStart(pID); i <= context.vit.getEnd(pID); i++) {
 		vector<vertexid_t> &outEdges = vTemp[i-start].getOutEdges();
 		vector<label_t> &outEdgeValues = vTemp[i-start].getOutEdgeValues();
+		vector<string> &tempStrs = vTemp[i-start].getTemp();
 
 		firstA = outEdges.begin();
 		lastA = outEdges.end();
 		firstB = outEdgeValues.begin();
 		lastB = outEdgeValues.end();
+		firstC = tempStrs.begin();
+		firstC = tempStrs.end();
 
 		if (firstA == lastA) continue;
 
 		resultA = firstA;
 		resultB = firstB;
+		resultC = firstC;
 		while (++firstA != lastA)
 		{
 			++firstB;
+			++firstC;
 			if (!(*resultA == *firstA) | !(*resultB == *firstB)) {
 				*(++resultA) = *firstA;
 				*(++resultB) = *firstB;
+				*(++resultC) = *firstC;
 			}
 		}
 		++resultA;
 		++resultB;
+		++resultC;
 
 		outEdges.erase(resultA, lastA);
 		outEdgeValues.erase(resultB, lastB);
+		tempStrs.erase(resultC, lastC);
 	}
 }
 /*
@@ -719,6 +755,15 @@ void Preproc_new::savePart(Context & context, int pID)
 			fwrite((const void*)& dst, sizeof(int), 1, f);
 			fwrite((const void*)& label, sizeof(char), 1, f);
 		}
+
+		vector<string> tempStrs = vTemp[j-start].getTemp();
+		int currsiz;
+		for (int n = 0; n < degree; n++) {
+			currsiz = tempStrs[n].size();
+			fwrite((const void*) &currsiz, sizeof(int), 1, f);
+			fwrite((const void*) tempStrs[n].c_str(), sizeof(char), currsiz, f);
+		}
+
 		if (degree != 0)
 			numVertex ++;
 		numVertexEdges += degree;

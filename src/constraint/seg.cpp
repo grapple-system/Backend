@@ -4,6 +4,6 @@ SEGraph::SEGraph(std::string filename) {
     // TODO: implement SEGraph initialization
 }
 
-SEGraph::retrieveConstraint(PseudoPC constRep) {
+RealPC SEGraph::retrieveConstraint(PseudoPC constRep) {
 
 }

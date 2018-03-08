@@ -14,7 +14,13 @@
 #include "vit.h"
 #include "DDM.h"
 #include "../edgecomp/grammar.h"
+
+/**
+ * PSA Includes
+ */
 #include "../../../constraint/seg.hpp"
+#include "../../../constraint/pseudoPC.hpp"
+#include "../../../constraint/realPC.hpp"
 
 class Context
 {

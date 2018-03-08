@@ -16,7 +16,7 @@ bool Loader::loadPartition(partitionid_t id, Partition &p, bool readable, Contex
 	int numVertices = 0;
 	int i = 0;
 	int temp;
-	string str;
+	string str, constrRep;
 	char *ctemp[2];
 	char buf[4096];
 	char *bbuf;
@@ -117,6 +117,8 @@ bool Loader::loadPartition(partitionid_t id, Partition &p, bool readable, Contex
 			while (0 != fread(&src, 4, 1, fp)) {
 				vector<vertexid_t> outEdges;
 				vector<label_t> outEdgeValues;
+				vector<PseudoPC> constraints;
+
 				fread(&degree, 4, 1, fp);
 				temp = degree * 5;
 				size += degree;
@@ -133,7 +135,19 @@ bool Loader::loadPartition(partitionid_t id, Partition &p, bool readable, Contex
 					outEdgeValues.push_back(label);
 					//	std::cout << dst << " " << (int)label << std::endl;
 				}
+
 				free(bbuf);
+
+				for (int n = 0; n < degree; n++) {
+					fread(&size, 4, 1, fp);
+					bbuf = (char *) malloc(size);
+					fread(bbuf, 1, size, fp);
+
+					constrRep += bbuf;
+					constraints.push_back(PseudoPC(constrRep));
+
+					free(bbuf);
+				}
 				/*
 				temp = degree*5;
 				size += degree;
@@ -148,12 +162,11 @@ bool Loader::loadPartition(partitionid_t id, Partition &p, bool readable, Contex
 				outEdgeValues.push_back(label);
 				}*/
 
-				vector<PseudoPC> moreStuff;			// FILLER TO MAKE COMPILE
-				Vertex v(src, outEdges, outEdgeValues, moreStuff);
+				Vertex v(src, outEdges, outEdgeValues, constraints);
 				data.push_back(v);
 			}
 			p.setID(id);
-			p.setNumEdges(size);
+			p.setNumEdges(degree);
 			p.setNumVertices(numVertices);
 			fclose(fp);
 			return 1;

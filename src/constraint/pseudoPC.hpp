@@ -14,7 +14,6 @@
 
 class PseudoPC
 {
-    List<int> constrRep;        // using int as a temporary filler
 
 public:
     PseudoPC() {}
