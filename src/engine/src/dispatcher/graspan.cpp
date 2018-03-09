@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 	if (!c.vit.loadFromFile(c.getGraphFile() + ".vit"))
 		cout << "couldn't load VIT" << endl;
 
-
+		
 	// PREPROCESSING
 	prepTimer.startTimer();
 
@@ -30,6 +30,8 @@ int main(int argc, char *argv[])
 	if (c.ddm.getNumPartition() != c.vit.getNumPartition() || c.vit.getNumPartition() == 0) {
 		run_preprocessing(c);
 	}
+
+	return 0;
 
 	// LOAD SYMBOLIC EXECUTION GRAPH
 	c.initialzeSEG();

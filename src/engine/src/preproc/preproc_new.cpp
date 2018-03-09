@@ -39,6 +39,7 @@ void Preproc_new::countNum(Context &context)
 				constrRep += constrBuf;
 				if (constrRep[constrRep.size() - 1] == '\n') notEOL = false;
 			}
+			std::cerr << src << "\t" << dst << "\t" << ctemp << "\t" << constrRep << std::endl;
 			constrRep.clear();
 		}
 		fclose(fp);
@@ -170,6 +171,7 @@ void Preproc_new::saveData(Context &context) {
 	int src, dst;
 	int temp;
 	int size = context.getNumPartitions();
+	std::cerr << "NUMPARTITIONS " << size << std::endl;
 	int tempSize;
 	unsigned long long int mSize = 0;
 	int start, end;
@@ -200,6 +202,7 @@ void Preproc_new::saveData(Context &context) {
 					notEOL = false;
 				}
 			}
+			std::cerr << src << "\t" << dst << "\t" << ctemp << "\t" << constrRep << std::endl;
 			temp = context.vit.partition(src);
 			start = context.vit.getStart(temp);
 			end = context.vit.getEnd(temp);
@@ -211,6 +214,7 @@ void Preproc_new::saveData(Context &context) {
 				//if over size is over the membudget then save and delete the exist one.
 
 				if (mSize + tempSize * (unsigned long long int)207 + vitDegree[temp] * (unsigned long long int)36 > context.getMemBudget()) {
+					std::cerr << "REPARTITIONING!" << std::endl;
 					for (int i = 0; i < size; i++) {
 						if (vertices[i] != NULL) {
 							//save
@@ -253,6 +257,7 @@ void Preproc_new::saveData(Context &context) {
 					continue;
 				}
 			}
+
 
 			numPartBuf[temp]++;
 			label = "";
@@ -438,16 +443,24 @@ void Preproc_new::mergePart(Context & context)
 	for (int i = 0; i < context.getNumPartitions(); i++) {
 		Vertex * vTemp = new Vertex[context.vit.getEnd(i) - context.vit.getStart(i) + 1];
 		vertices[i] = vTemp;
+
+		std::cerr << "LOAD CHUNK" << std::endl;
 		loadPartChunk(context, i);
+		std::cerr << "DONE LOADING CHUNK" << std::endl;
 		//add erule
 		begin = clock();
-		addErules(context, i);
+		///addErules(context, i);
 		end = clock();
-		cout << "SORTING PART " << i << " TIME: " << ((end - begin) / CLOCKS_PER_SEC) << std::endl;
+		//cout << "SORTING PART " << i << " TIME: " << ((end - begin) / CLOCKS_PER_SEC) << std::endl;
 		//check Duplicates
+		std::cerr << "CHECK DUPS" << std::endl;
 		checkPart(context, i);
+		std::cerr << "DONE CHECKING DUPS" << std::endl;
 		//save
+
+		std::cerr << "SAVE PART" << std::endl;
 		savePart(context, i);
+		std::cerr << "DONE SAVING PART" << std::endl;
 
 		vTemp->clearVector();
 		delete[] vTemp;
@@ -509,27 +522,35 @@ void Preproc_new::loadPartChunk(Context & context, int pID)
 				vector<string> &tempStrs = vTemp[src - start].getTemp();
 				bbuf = (char *)malloc(temp);
 				fread(bbuf, temp, 1, f);
+				std::cerr << src << "  " << degree << "  ";
 				for (int j = 0; j < temp; j += 5) {
 					dst = *((int*)(bbuf + j));
 					label = *((char*)(bbuf + 4 + j));
 					outEdges.push_back(dst);
 					outEdgeValues.push_back(label);
+					std::cerr << "(" << dst << ", " << (char)label+97 << ")" << " ";
 				}
 				free(bbuf);
-
 				// READ in CONSTRAINT STRINGS
+				std::cout << std::endl;
 				for (int n = 0; n < degree; n++) {
 					fread(&constrSiz, 4, 1, f);
+					std::cerr << "CONSTSIZ: " << constrSiz << std::endl;
 					bbuf = (char *) malloc(constrSiz);
+					fread(bbuf, 1, constrSiz, f);
 					constrStr += bbuf;
+					std::cerr << "CONSTRAINT: " << constrStr << std::endl;
 					tempStrs.push_back(constrStr);
 					free(bbuf);
+					constrStr.clear();
 				}
 
 				vTemp[src-start].setNumOutEdges(numVert);
 				//for ddm
 				if (pID != context.vit.partition(dst) && context.vit.partition(dst) != -1)
 					ddmMap[pID][context.vit.partition(dst)] ++;
+
+					std::cerr << "DONE READING " << std::endl;
 			}
 			fclose(f);
 		}
@@ -659,12 +680,18 @@ void Preproc_new::checkPart(Context & context, int pID)
 		vector<label_t> &outEdgeValues = vTemp[i-start].getOutEdgeValues();
 		vector<string> &tempStrs = vTemp[i-start].getTemp();
 
+		std::cerr << "CONSTR STRS" << std::endl;
+		for (int n = 0; n < tempStrs.size(); n++) {
+			std::cerr << tempStrs[n] << " ";
+		}
+		std::cerr << std::endl;
+
 		firstA = outEdges.begin();
 		lastA = outEdges.end();
 		firstB = outEdgeValues.begin();
 		lastB = outEdgeValues.end();
 		firstC = tempStrs.begin();
-		firstC = tempStrs.end();
+		lastC = tempStrs.end();
 
 		if (firstA == lastA) continue;
 

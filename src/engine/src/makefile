@@ -1,4 +1,4 @@
-CC=g++ -std=c++0x -v
+CC=g++ -std=c++0x
 
 #use path according to boost installation directory in user machine
 #export LD_LIBRARY_PATH=/home/aftab/Downloads/boost_1.62_installed/lib:$LD_LIBRARY_PATH
