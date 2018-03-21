@@ -9,7 +9,10 @@
 #include <iostream>
 using namespace std;
 
+#include "../constraint/seg.hpp"
+
 int main() {
 	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
+	SEGraph seg("test1.json");
 	return 0;
 }

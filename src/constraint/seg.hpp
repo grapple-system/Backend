@@ -8,11 +8,17 @@
 #ifndef CONSTRAINT_SEG_HPP_
 #define CONSTRAINT_SEG_HPP_
 
+#include <fstream>
+#include <iostream>
+using namespace std;
+
 #include "realPC.hpp"
 #include "pseudoPC.hpp"
+#include "datastructure/stateTree.hpp"
 
 class SEGraph {
 private:
+  std::list<StateTree> stateTreeList;
   RealPC retrieveConstraint(PseudoPC constRep);
 
 public:
