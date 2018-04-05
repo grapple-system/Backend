@@ -1,5 +1,5 @@
 CC=g++ -std=c++0x
-
+LIBFLAGS=-lboost_thread -lpthread -lboost_system 
 #use path according to boost installation directory in user machine
 #export LD_LIBRARY_PATH=/home/aftab/Downloads/boost_1.62_installed/lib:$LD_LIBRARY_PATH
 
@@ -21,4 +21,4 @@ CONSTRAINT=../../constraint/pseudoPC.cpp ../../constraint/seg.cpp ../../constrai
 
 ##### build rules #####
 comp: dispatcher/graspan.cpp $(PREP) $(LOADER) $(COMPUTATION) $(DATASTRUCTS) $(UTIL) $(CONSTRAINT)
-	$(CC) dispatcher/graspan.cpp $(PREP) $(LOADER) $(COMPUTATION) $(DATASTRUCTS) $(UTIL) $(CONSTRAINT) -o ../bin/comp -O2 -ggdb -lboost_thread-mt -lpthread -lboost_system
+	$(CC) dispatcher/graspan.cpp $(PREP) $(LOADER) $(COMPUTATION) $(DATASTRUCTS) $(UTIL) $(CONSTRAINT) -o ../bin/comp -O2 -ggdb $(LIBFLAGS)

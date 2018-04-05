@@ -1,0 +1,8 @@
+#! /bin/bash
+
+make
+
+
+echo "######## EXECUTION #######"
+
+./run res/testgraph res/grammartest 1 8 1

@@ -39,7 +39,7 @@ void Preproc_new::countNum(Context &context)
 				constrRep += constrBuf;
 				if (constrRep[constrRep.size() - 1] == '\n') notEOL = false;
 			}
-			std::cerr << src << "\t" << dst << "\t" << ctemp << "\t" << constrRep << std::endl;
+			std::cerr << src << "\t" << dst << "\t" << ctemp << "\t" << constrRep;
 			constrRep.clear();
 		}
 		fclose(fp);
@@ -180,7 +180,7 @@ void Preproc_new::saveData(Context &context) {
 
 	for (int i = 0; i < size; i++) {
 		vertices[i] = NULL;
-		constraints[i] = NULL;
+		//constraints[i] = NULL;
 	}
 
 	numPartBuf = new int[size];
@@ -190,6 +190,7 @@ void Preproc_new::saveData(Context &context) {
 	}
 
 
+	std::cerr << "OPENFILE!" << std::endl;
 	fp = fopen(context.getGraphFile().c_str(), "r");
 	if (fp != NULL) {
 		while (fscanf(fp, "%d\t%d\t%s\t", &src, &dst, ctemp) != EOF) {
