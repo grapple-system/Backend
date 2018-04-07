@@ -2,8 +2,7 @@
 
 SEGraph::SEGraph(std::string filename) {
     // TODO: implement SEGraph initialization
-    cout<<"In SEGraph"<<endl;
-    std::ifstream input("/Users/wangyifei/CLionProjects/PSA/test0.json" ,std::ios::in);
+    std::ifstream input(filename, std::ios::in);
     if(!input) {
         cout<<"Failed to open "<<filename<<endl;
         return;

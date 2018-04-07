@@ -2,10 +2,10 @@
 
 void StateNode::setStateNode(StateNode* &root, list<string> stateNodeList) {
     list<string>::iterator itr = stateNodeList.begin();
-    setSatetNode(root, itr);
+    setStateNode(root, itr);
 }
 
-void StateNode::setSatetNode(StateNode* &root, list<string>::iterator &itr) {
+void StateNode::setStateNode(StateNode* &root, list<string>::iterator &itr) {
     boost::property_tree::ptree pt;
     string str = *itr;
     ++itr;
@@ -69,8 +69,8 @@ void StateNode::setSatetNode(StateNode* &root, list<string>::iterator &itr) {
             if(root->returnExp == "null"){
                 root->returnExp.clear();
             }
-            setSatetNode(root->trueChild, itr);
-            setSatetNode(root->falseChild, itr);
+            setStateNode(root->trueChild, itr);
+            setStateNode(root->falseChild, itr);
             return;
         }
 

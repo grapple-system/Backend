@@ -25,7 +25,7 @@ public:
         this-> falseChild = NULL;
     }
     void setStateNode(StateNode* &root, list<string> stateNodeList);
-    void setSatetNode(StateNode* &root, std::list<std::string>::iterator &itr);
+    void setStateNode(StateNode* &root, list<string>::iterator &itr);
 //    void setConditional(string conditional) {
 //        this->conditional = conditional;
 //    }

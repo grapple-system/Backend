@@ -14,18 +14,20 @@ using namespace std;
 
 #include "realPC.hpp"
 #include "pseudoPC.hpp"
-#include "datastructure/stateTree.hpp"
+#include "datastructure1/stateTree.hpp"
+#include "datastructure2/constraintMaps.hpp"
 
 class SEGraph {
 private:
-  std::list<StateTree> stateTreeList;
-  RealPC retrieveConstraint(PseudoPC constRep);
+    ConstraintMaps constraintMaps;
+    list<StateTree> stateTreeList;
+    RealPC retrieveConstraint(PseudoPC constRep);
 
 public:
-  SEGraph() {}
-  SEGraph(std::string filename);
+    SEGraph() {}
+    SEGraph(std::string filename);
 
-  bool solve(RealPC pathConst);  // place holder for constraint solver
+    bool solve(RealPC pathConst);  // place holder for constraint solver
 };
 
 

@@ -10,9 +10,12 @@
 using namespace std;
 
 #include "../constraint/seg.hpp"
+#include "../constraint/datastructure2/constraintMaps.hpp"
 
 int main() {
 	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
-	SEGraph seg("test1.json");
+	//SEGraph seg("test1.json");
+	ConstraintMaps constraintMaps("/Users/wangyifei/CLionProjects/PSA/test0.json");
+	constraintMaps.print();
 	return 0;
 }
