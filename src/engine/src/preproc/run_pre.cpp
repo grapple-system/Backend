@@ -8,28 +8,28 @@ int run_preprocessing(Context &context) {
 
 	begin = clock();
 
-	std::cerr << "init Context" << std::endl;
+	std::cerr << "=== init Context ===" << std::endl;
 	Preproc_new preN(context);
 
-	std::cerr << "SET MAP INFO" << std::endl;
+	std::cerr << "=== SET MAP INFO ===" << std::endl;
 	preN.setMapInfo(context.grammar.getMapInfo(), context.grammar.getErules());
 
-	std::cerr << "COUNT NUM" << std::endl;
+	std::cerr << "=== COUNT NUM ===" << std::endl;
 	preN.countNum(context);
 
-	std::cerr << "SET VIT" << std::endl;
+	std::cerr << "=== SET VIT ===" << std::endl;
 	preN.setVIT(context);
 
-	std::cerr << "DDM_SETNUMPARTS" << std::endl;
+	std::cerr << "=== DDM_SETNUMPARTS ===" << std::endl;
 	context.ddm.setNumPartition(context.getNumPartitions());
 
-	std::cerr << "DDM_RESIZE" << std::endl;
+	std::cerr << "=== DDM_RESIZE ===" << std::endl;
 	context.ddm.reSize();
 
-	std::cerr << "SAVE DATA" << std::endl;
+	std::cerr << "=== SAVE DATA ===" << std::endl;
 	preN.saveData(context);
 
-	std::cerr << "MERGEPART" << std::endl;
+	std::cerr << "=== MERGEPART ===" << std::endl;
 	preN.mergePart(context);
 	//preN.test_saveData(context);
 	//preN.test_mergePart(context);
