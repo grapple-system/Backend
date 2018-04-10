@@ -517,7 +517,6 @@ void Preproc_new::loadPartChunk(Context & context, int pID)
 				fread(&degree, 4, 1, f);
 				temp = degree * 5;
 				size += degree;
-				numVert++;
 				vector<vertexid_t> &outEdges = vTemp[src-start].getOutEdges();
 				vector<label_t> &outEdgeValues = vTemp[src-start].getOutEdgeValues();
 				vector<string> &tempStrs = vTemp[src - start].getTemp();
@@ -546,7 +545,7 @@ void Preproc_new::loadPartChunk(Context & context, int pID)
 					constrStr.clear();
 				}
 
-				vTemp[src-start].setNumOutEdges(numVert);
+				vTemp[src-start].setNumOutEdges(degree);
 				//for ddm
 				if (pID != context.vit.partition(dst) && context.vit.partition(dst) != -1)
 					ddmMap[pID][context.vit.partition(dst)] ++;
@@ -558,7 +557,6 @@ void Preproc_new::loadPartChunk(Context & context, int pID)
 		else {
 			assert(false, "cant open bin file " + pID);
 		}
-		numVert = 0;
 		str2 = std::to_string((long long)i++);
 		name = context.getGraphFile() + "." + PART + "." + BINA + "." + str.c_str() + "." + str2.c_str();
 	}
@@ -771,33 +769,35 @@ void Preproc_new::savePart(Context & context, int pID)
 	name = context.getGraphFile() + "." + PART + "." + BINA + "." + std::to_string((long long)pID);
 	f = fopen(name.c_str(), "wb");
 	for (int j = context.vit.getStart(pID); j <= context.vit.getEnd(pID); j++) {
-		src = j;
-		degree = vTemp[j-start].getNumOutEdges();
-		numEdges += degree;
-		fwrite((const void*)& src, sizeof(int), 1, f);
-		fwrite((const void*)& degree, sizeof(int), 1, f);
+			src = j;
+			degree = vTemp[j-start].getNumOutEdges();
+			numEdges += degree;
+			fwrite((const void*)& src, sizeof(int), 1, f);
+			fwrite((const void*)& degree, sizeof(int), 1, f);
 
-		for (int k = 0; k < degree; k++) {
-			dst = vTemp[j-start].getOutEdge(k);
-			label = vTemp[j-start].getOutEdgeValue(k);
-			fwrite((const void*)& dst, sizeof(int), 1, f);
-			fwrite((const void*)& label, sizeof(char), 1, f);
-		}
+			int currsiz;
+			vector<string> tempStrs = vTemp[j-start].getTemp();
+			for (int k = 0; k < degree; k++) {
+				// write the edges and labels
+				dst = vTemp[j-start].getOutEdge(k);
+				label = vTemp[j-start].getOutEdgeValue(k);
+				fwrite((const void*)& dst, sizeof(int), 1, f);
+				fwrite((const void*)& label, sizeof(char), 1, f);
 
-		vector<string> tempStrs = vTemp[j-start].getTemp();
-		int currsiz;
-		for (int n = 0; n < degree; n++) {
-			currsiz = tempStrs[n].size();
-			fwrite((const void*) &currsiz, sizeof(int), 1, f);
-			fwrite((const void*) tempStrs[n].c_str(), sizeof(char), currsiz, f);
-		}
+				// write the constraint for the current edge
+				currsiz = tempStrs[k].size();
+				fwrite((const void*) &currsiz, sizeof(int), 1, f);
+				fwrite((const void*) tempStrs[k].c_str(), sizeof(char), currsiz, f);
+			}
 
-		if (degree != 0)
-			numVertex ++;
-		numVertexEdges += degree;
-		vTemp[j-start].clearVector();
+			if (degree != 0)
+				numVertex ++;
+			numVertexEdges += degree;
+			vTemp[j-start].clearVector();
 	}
 	fclose(f);
+
+	// update the DDM
 	for (int i = 0; i < ddmMap[0].size(); i++) {
 		ddmMap[pID][i] /= (double)numVertexEdges;
 		d_ddmMap[pID][i] = ddmMap[pID][i];
