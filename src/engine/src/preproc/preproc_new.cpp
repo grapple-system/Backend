@@ -280,60 +280,8 @@ void Preproc_new::saveData(Context &context) {
 	}
 	delete[]numPartBuf;
 }
-/*
-void Preproc_new::saveData(Context &context) {
-	FILE *fp;
-	string label;
-	char ctemp[10];
-	int src, dst;
-	int temp;
-	int size = context.getNumPartitions();
-	partBuf = new Vertex[dataSize];
-	numPartBuf = new int[size];
-
-	for (int i = 0; i < size; i++) {
-		numPartBuf[i] = 0;
-	}
 
 
-	fp = fopen(context.getGraphFile().c_str(), "r");
-	if (fp != NULL) {
-		while (fscanf(fp, "%d\t%d\t%s\n", &src, &dst, ctemp) != EOF) {
-
-			temp = context.vit.partition(src);
-			vector<vertexid_t> &outEdges = partBuf[src].getOutEdges();
-			vector<label_t> &outEdgeValues = partBuf[src].getOutEdgeValues();
-			label += ctemp;
-			outEdges.push_back(dst);
-			for (int i = 1; i < mapInfo.size(); i++) {
-				if (strcmp(label.c_str(), mapInfo[i].c_str()) == 0) {
-					outEdgeValues.push_back(i);
-					partBuf[src].setNumOutEdges(outEdgeValues.size());
-					break;
-				}
-			}
-
-			numPartBuf[temp]++;
-			label = "";
-
-			if (numPartBuf[temp]*8 > context.getMemBudget() / (size * 90)) {
-				this->savePartChunk(context, temp);
-				numPartBuf[temp] = 0;
-			}
-		}
-		fclose(fp);
-		for (int i = 0; i < size; i++) {
-			if (numPartBuf[i] == 0)
-				continue;
-			this->savePartChunk(context, i);
-		}
-	}
-	else {
-		assert(false, "cannot open graph_file");
-	}
-	delete[]numPartBuf;
-}
-*/
 void Preproc_new::savePartChunk(Context & context, int pID)
 {
 	FILE *f;
@@ -390,50 +338,7 @@ void Preproc_new::savePartChunk(Context & context, int pID)
 		assert(false, "Cannot make Binary file ");
 	}
 }
-/*
-void Preproc_new::savePartChunk(Context &context, int pID) {
-	FILE *f;
-	string str, str2;
-	string name;
-	set<char>::iterator it_e; //for eRules
 
-	int degree, dst;
-	int k = 0;
-
-	char label;
-
-	str = std::to_string((long long)pID);
-	str2 = std::to_string((long long)k++);
-	name = context.getGraphFile() + "." + PART + "." + BINA + "." + str.c_str() + "." + str2.c_str();
-	while (access(name.c_str(), 0) != -1) {
-		str2 = std::to_string((long long)k++);
-		name = context.getGraphFile() + "." + PART + "." + BINA + "." + str.c_str() + "." + str2.c_str();
-	}
-
-	f = fopen(name.c_str(), "ab");
-	if (f != NULL) {
-		for (int i = context.vit.getStart(pID); i <= context.vit.getEnd(pID) ; i++) {
-			degree = partBuf[i].getNumOutEdges();
-			if (degree == 0)
-				continue;
-			fwrite((const void*)& i, sizeof(int), 1, f);
-			fwrite((const void*)& degree, sizeof(int), 1, f);
-
-			vector<vertexid_t> &outEdges = partBuf[i].getOutEdges();
-			vector<label_t> &outEdgeValues = partBuf[i].getOutEdgeValues();
-
-			for (int j = 0; j < outEdges.size(); j++) {
-				fwrite((const void*)& outEdges[j], sizeof(int), 1, f);
-				fwrite((const void*)& outEdgeValues[j], sizeof(char), 1, f);
-			}
-			partBuf[i].clearVector();
-		}
-		fclose(f);
-	}
-	else {
-		assert(false, "Cannot make Binary file ");
-	}
-}*/
 
 void Preproc_new::mergePart(Context & context)
 {
@@ -471,25 +376,6 @@ void Preproc_new::mergePart(Context & context)
 	cout << "NumEdges " << numEdges << endl;
 }
 
-/*void Preproc_new::mergePart(Context & context)	{
-	clock_t begin, end;
-
-	numVertex = 0;
-	for (int i = 0; i < context.getNumPartitions(); i++) {
-		loadPartChunk(context, i);
-		//add erule
-		begin = clock();
-		addErules(context, i);
-		end = clock();
-		cout << "SORTING PART " << i << " TIME: " << ((end - begin) / CLOCKS_PER_SEC) << std::endl;
-		//check Duplicates
-		checkPart(context, i);
-		//save
-		savePart(context, i);
-	}
-	context.ddm.save_DDM(context.getGraphFile() + ".ddm");
-	cout << "NumVertex " << numVertex << endl;
-}*/
 
 void Preproc_new::loadPartChunk(Context & context, int pID)
 {
@@ -562,56 +448,6 @@ void Preproc_new::loadPartChunk(Context & context, int pID)
 	}
 }
 
-/*void Preproc_new::loadPartChunk(Context &context, int pID) {
-	vector<vector<double> > &ddmMap = context.ddm.getDdmMap();
-	FILE *f;
-	string str, str2, name;
-	char label;
-	int src, degree, dst, temp;
-	int size, numVert = 0;
-	int i = 0;
-	char *bbuf;
-
-	str = std::to_string((long long)pID);
-	str2 = std::to_string((long long)i++);
-	name = context.getGraphFile() + "." + PART + "." + BINA + "." + str.c_str() + "." + str2.c_str();
-	while (access(name.c_str(), 0) != -1) {
-		f = fopen(name.c_str(), "r");
-		if (f != NULL) {
-			while (0 != fread(&src, 4, 1, f)) {
-				fread(&degree, 4, 1, f);
-				temp = degree * 5;
-				size += degree;
-				numVert++;
-
-				vector<vertexid_t> &outEdges = partBuf[src].getOutEdges();
-				vector<label_t> &outEdgeValues = partBuf[src].getOutEdgeValues();
-				bbuf = (char *)malloc(temp);
-				fread(bbuf, temp, 1, f);
-				for (int j = 0; j < temp; j += 5) {
-
-					dst = *((int*)(bbuf + j));
-					label = *((char*)(bbuf + 4 + j));
-
-					outEdges.push_back(dst);
-					outEdgeValues.push_back(label);
-				}
-				free(bbuf);
-				partBuf[src].setNumOutEdges(numVert);
-				//for ddm
-				if (pID != context.vit.partition(dst) && context.vit.partition(dst) != -1)
-					ddmMap[pID][context.vit.partition(dst)] ++;
-			}
-			fclose(f);
-		}
-		else {
-			assert(false, "cant open bin file " + pID);
-		}
-		numVert = 0;
-		str2 = std::to_string((long long)i++);
-		name = context.getGraphFile() + "." + PART + "." + BINA + "." + str.c_str() + "." + str2.c_str();
-	}
-}*/
 
 void Preproc_new::addErules(Context & context, int pID)
 {
@@ -640,28 +476,7 @@ void Preproc_new::addErules(Context & context, int pID)
 		vTemp[i-start].setNumOutEdges(outEdges.size());
 	}
 }
-/*
-void Preproc_new::addErules(Context &context, int pID) {
-	set<char>::iterator it_e; //for eRules
-	char label;
 
-	for (int i = context.vit.getStart(pID); i <= context.vit.getEnd(pID); i++) {
-
-		//	if (partBuf[j].getNumOutEdges() == 0 && dataCheck[j] == 0)
-		//		continue;
-
-		vector<vertexid_t> &outEdges = partBuf[i].getOutEdges();
-		vector<label_t> &outEdgeValues = partBuf[i].getOutEdgeValues();
-
-		for (it_e = eRules.begin(); it_e != eRules.end(); it_e++) {
-			label = *it_e;
-			outEdges.push_back(i);
-			outEdgeValues.push_back(label);
-		}
-		quickSort(outEdges, outEdgeValues, 0, outEdges.size());
-		partBuf[i].setNumOutEdges(outEdges.size());
-	}
-}*/
 
 void Preproc_new::checkPart(Context & context, int pID)
 {
@@ -716,41 +531,7 @@ void Preproc_new::checkPart(Context & context, int pID)
 		tempStrs.erase(resultC, lastC);
 	}
 }
-/*
-void Preproc_new::checkPart(Context &context, int pID) {
 
-	vector<vertexid_t>::iterator firstA, lastA, resultA;
-	vector<label_t>::iterator firstB, lastB, resultB;
-
-	for (int i = context.vit.getStart(pID); i <= context.vit.getEnd(pID); i++) {
-		vector<vertexid_t> &outEdges = partBuf[i].getOutEdges();
-		vector<label_t> &outEdgeValues = partBuf[i].getOutEdgeValues();
-
-		firstA = outEdges.begin();
-		lastA = outEdges.end();
-		firstB = outEdgeValues.begin();
-		lastB = outEdgeValues.end();
-
-		if (firstA == lastA) continue;
-
-		resultA = firstA;
-		resultB = firstB;
-		while (++firstA != lastA)
-		{
-			++firstB;
-			if (!(*resultA == *firstA) | !(*resultB == *firstB)) {
-				*(++resultA) = *firstA;
-				*(++resultB) = *firstB;
-			}
-		}
-		++resultA;
-		++resultB;
-
-		outEdges.erase(resultA, lastA);
-		outEdgeValues.erase(resultB, lastB);
-		numVertex += outEdges.size();
-	}
-}*/
 
 void Preproc_new::savePart(Context & context, int pID)
 {
@@ -803,37 +584,7 @@ void Preproc_new::savePart(Context & context, int pID)
 		d_ddmMap[pID][i] = ddmMap[pID][i];
 	}
 }
-/*
-void Preproc_new::savePart(Context &context, int pID) {
-	vector<vector<double> > &ddmMap = context.ddm.getDdmMap();
-	FILE *f;
-	string name;
-	char label;
-	int src, degree, dst;
-	int numVertexEdges = 0;
 
-	name = context.getGraphFile() + "." + PART + "." + BINA + "." + std::to_string((long long)pID);
-	f = fopen(name.c_str(), "wb");
-	for (int j = context.vit.getStart(pID); j <= context.vit.getEnd(pID); j++) {
-		src = j;
-		degree = partBuf[j].getNumOutEdges();
-
-		fwrite((const void*)& src, sizeof(int), 1, f);
-		fwrite((const void*)& degree, sizeof(int), 1, f);
-
-		for (int k = 0; k < degree; k++) {
-			dst = partBuf[j].getOutEdge(k);
-			label = partBuf[j].getOutEdgeValue(k);
-			fwrite((const void*)& dst, sizeof(int), 1, f);
-			fwrite((const void*)& label, sizeof(char), 1, f);
-		}
-		numVertexEdges += degree;
-		partBuf[j].clearVector();
-	}
-	fclose(f);
-	for (int i = 0; i < ddmMap[0].size(); i++)
-		ddmMap[pID][i] /= (double)numVertexEdges;
-}*/
 
 void Preproc_new::setMapInfo(vector<string> mapInfo, set<char> eRules) {
 	set<char>::iterator it_e; //for eRules

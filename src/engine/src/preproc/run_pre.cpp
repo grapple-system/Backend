@@ -36,33 +36,4 @@ int run_preprocessing(Context &context) {
 	end = clock();
 	cout << "NEWPREPROC TIME: " << ((end - begin) / CLOCKS_PER_SEC) << std::endl;
 	return 0;
-
-	begin = clock();
-	Preproc pre(context);
-	pre.setMapInfo(context.grammar.getMapInfo(), context.grammar.getErules());
-
-	//save vit file
-
-	pre.countNum(context);
-	pre.saveData(context);
-	pre.makeVIT(context);
-
-	context.ddm.setNumPartition(pre.getNumOfPartitions());
-	context.ddm.reSize();
-
-	//save text file
-	//begin = clock();
-	//pre.makePart(context); // Make human readable file and ddm :TODO: factor the part of ddm out
-	//end = clock();
-	//cout << "makePart time : " << ((end - begin) / CLOCKS_PER_SEC) << std::endl;
-
-	//save binary file and DDM
-	//begin = clock();
-	pre.makeBinaryPart(context);
-
-	pre.makeDDM(context);
-	end = clock();
-	//cout << "makeBinaryPart time : " << ((end - begin) / CLOCKS_PER_SEC) << std::endl;
-	cout << "PREPROC TIME: " << ((end - begin) / CLOCKS_PER_SEC) << std::endl;
-	return 0;
 }

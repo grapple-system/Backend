@@ -5,4 +5,4 @@ make
 
 echo "######## EXECUTION #######"
 
-./run res/testgraph res/grammartest 1 8 1
+./run res/testgraph res/grammartest 2 8 1

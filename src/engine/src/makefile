@@ -9,7 +9,7 @@ LIBFLAGS=-lboost_thread -lpthread -lboost_system
 ##### source files #####
 # preprocessing
 
-PREP=preproc/preproc.cpp preproc/preproc_new.cpp preproc/run_pre.cpp
+PREP=preproc/preproc_new.cpp preproc/run_pre.cpp
 # edge computation
 COMPUTATION=edgecomp/engine.cpp edgecomp/compute.cpp edgecomp/edgemerger.cpp edgecomp/repart.cpp
 LOADER=datastructures/loader.cpp edgecomp/grammar.cpp
