@@ -113,7 +113,6 @@ bool Loader::loadPartition(partitionid_t id, Partition &p, bool readable, Contex
 		str = c.getGraphFile() + "." + PART + "." + BINA + "." + std::to_string((long long)id);
 		fp = fopen(str.c_str(), "rb");
 		if (fp != NULL) {
-			// wouldnt this cause problem with hard-coded value 4 and 1???
 			while (0 != fread(&src, 4, 1, fp)) {
 				vector<vertexid_t> outEdges;
 				vector<label_t> outEdgeValues;

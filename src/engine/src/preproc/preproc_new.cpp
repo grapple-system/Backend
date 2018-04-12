@@ -189,8 +189,6 @@ void Preproc_new::saveData(Context &context) {
 		numPartBuf[i] = 0;
 	}
 
-
-	std::cerr << "OPENFILE!" << std::endl;
 	fp = fopen(context.getGraphFile().c_str(), "r");
 	if (fp != NULL) {
 		while (fscanf(fp, "%d\t%d\t%s\t", &src, &dst, ctemp) != EOF) {
@@ -317,17 +315,17 @@ void Preproc_new::savePartChunk(Context & context, int pID)
 			vector<vertexid_t> &outEdges = vTemp[i - start].getOutEdges();
 			vector<label_t> &outEdgeValues = vTemp[i - start].getOutEdgeValues();
 
+			vector<string> &tempStrs = vTemp[i - start].getTemp();
+			int currsiz;
 			for (int j = 0; j < outEdges.size(); j++) {
 				fwrite((const void*)& outEdges[j], sizeof(int), 1, f);
 				fwrite((const void*)& outEdgeValues[j], sizeof(char), 1, f);
+				currsiz = tempStrs[j].size();
+				fwrite((const void*) &currsiz, sizeof(int), 1, f);
 			}
 
-			vector<string> &tempStrs = vTemp[i - start].getTemp();
-			int currsiz;
 			for (int n = 0; n < tempStrs.size(); n++) {
-				currsiz = tempStrs[n].size();
-				fwrite((const void*) &currsiz, sizeof(int), 1, f);
-				fwrite((const void*) tempStrs[n].c_str(), sizeof(char), currsiz, f);
+				fwrite((const void*) tempStrs[n].c_str(), sizeof(char), tempStrs[n].size(), f);
 			}
 
 			vTemp[i - start].clearVector();
@@ -393,6 +391,8 @@ void Preproc_new::loadPartChunk(Context & context, int pID)
 	int i = 0;
 	char *bbuf;
 
+	vector<int> constrSizes;
+
 	str = std::to_string((long long)pID);
 	str2 = std::to_string((long long)i++);
 	name = context.getGraphFile() + "." + PART + "." + BINA + "." + str.c_str() + "." + str2.c_str();
@@ -401,7 +401,7 @@ void Preproc_new::loadPartChunk(Context & context, int pID)
 		if (f != NULL) {
 			while (0 != fread(&src, 4, 1, f)) {
 				fread(&degree, 4, 1, f);
-				temp = degree * 5;
+				temp = degree * 9;
 				size += degree;
 				vector<vertexid_t> &outEdges = vTemp[src-start].getOutEdges();
 				vector<label_t> &outEdgeValues = vTemp[src-start].getOutEdgeValues();
@@ -409,27 +409,29 @@ void Preproc_new::loadPartChunk(Context & context, int pID)
 				bbuf = (char *)malloc(temp);
 				fread(bbuf, temp, 1, f);
 				std::cerr << src << "  " << degree << "  ";
-				for (int j = 0; j < temp; j += 5) {
+				for (int j = 0; j < temp; j += 9) {
 					dst = *((int*)(bbuf + j));
 					label = *((char*)(bbuf + 4 + j));
+					constrSiz = *((int*)(bbuf + 5 + j));
 					outEdges.push_back(dst);
 					outEdgeValues.push_back(label);
+					constrSizes.push_back(constrSiz);
 					std::cerr << "(" << dst << ", " << (char)label+97 << ")" << " ";
 				}
 				free(bbuf);
 				// READ in CONSTRAINT STRINGS
 				std::cout << std::endl;
 				for (int n = 0; n < degree; n++) {
-					fread(&constrSiz, 4, 1, f);
-					std::cerr << "CONSTSIZ: " << constrSiz << std::endl;
-					bbuf = (char *) malloc(constrSiz);
-					fread(bbuf, 1, constrSiz, f);
+					std::cerr << "CONSTSIZ: " << constrSizes[n] << std::endl;
+					bbuf = (char *) malloc(constrSizes[n]);
+					fread(bbuf, 1, constrSizes[n], f);
 					constrStr += bbuf;
 					std::cerr << "CONSTRAINT: " << constrStr << std::endl;
 					tempStrs.push_back(constrStr);
 					free(bbuf);
 					constrStr.clear();
 				}
+				constrSizes.clear();
 
 				vTemp[src-start].setNumOutEdges(degree);
 				//for ddm
