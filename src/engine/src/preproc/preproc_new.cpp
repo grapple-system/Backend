@@ -473,8 +473,9 @@ void Preproc_new::addErules(Context & context, int pID)
 			label = *it_e;
 			outEdges.push_back(i);
 			outEdgeValues.push_back(label);
+			tempStrs.push_back("");
 		}
-		quickSort(outEdges, outEdgeValues, 0, outEdges.size());
+		quickSort(outEdges, outEdgeValues, tempStrs, 0, outEdges.size());
 		vTemp[i-start].setNumOutEdges(outEdges.size());
 	}
 }
@@ -495,12 +496,6 @@ void Preproc_new::checkPart(Context & context, int pID)
 		vector<vertexid_t> &outEdges = vTemp[i-start].getOutEdges();
 		vector<label_t> &outEdgeValues = vTemp[i-start].getOutEdgeValues();
 		vector<string> &tempStrs = vTemp[i-start].getTemp();
-
-		std::cerr << "CONSTR STRS" << std::endl;
-		for (int n = 0; n < tempStrs.size(); n++) {
-			std::cerr << tempStrs[n] << " ";
-		}
-		std::cerr << std::endl;
 
 		firstA = outEdges.begin();
 		lastA = outEdges.end();
@@ -608,36 +603,38 @@ Preproc_new::~Preproc_new()
 
 //make these thing in Vertex
 //check the sort time
-void quickSort(vector<vertexid_t>& A, vector<label_t>& B, int p, int q)
+void quickSort(vector<vertexid_t>& A, vector<label_t>& B, vector<string>& C, int p, int q)
 {
 	int r;
 	if (p<q)
 	{
-		r = partition(A, B, p, q);
-		quickSort(A, B, p, r);
-		quickSort(A, B, r + 1, q);
+		r = partition(A, B, C, p, q);
+		quickSort(A, B, C, p, r);
+		quickSort(A, B, C, r + 1, q);
 	}
 }
 
 
-int partition(vector<vertexid_t>& A, vector<label_t>& B, int p, int q)
+int partition(vector<vertexid_t>& A, vector<label_t>& B, vector<string>& C, int p, int q)
 {
 	int x = A[p];
 	int i = p;
 	int j;
 
-	for (j = p + 1; j<q; j++)
+	for (j = p + 1; j < q; j++)
 	{
 		if (A[j] <= x)
 		{
-			i ++;
+			i++;
 			std::swap(A[i], A[j]);
 			std::swap(B[i], B[j]);
+			std::swap(C[i], C[j]);
 		}
 
 	}
 
 	std::swap(A[i], A[p]);
 	std::swap(B[i], B[p]);
+	std::swap(C[i], C[p]);
 	return i;
 }
