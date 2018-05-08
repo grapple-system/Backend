@@ -20,9 +20,9 @@ void EdgeMerger::mergeVectors(vector< vector<vertexid_t> > &edgeVecsToMerge,
 	{
 		MinSet srcMS;				// initialize a MinSet for the source vertex
 		srcMS.setMinSetID(0);
-		updateMinSet(srcMS, edgeVecsToMerge[srcID], valVecsToMerge[srcID]);		// initialize the info of the source MinSet
+		updateMinSet(srcMS, edgeVecsToMerge[srcID], valVecsToMerge[srcID], constrVecsToMerge[srcID]);		// initialize the info of the source MinSet
 
-		fillPriorityQueue(edgeVecsToMerge, valVecsToMerge, srcDeltaEdges, srcDeltaVals, srcoUnUdEdges, srcoUnUdVals, srcID);
+		fillPriorityQueue(edgeVecsToMerge, valVecsToMerge, constrVecsToMerge, srcDeltaEdges, srcDeltaVals, srcDeltaConstrs, srcoUnUdEdges, srcoUnUdVals, srcoUnUdConstrs, srcID);
 
 		MinSet tgt;
 		int max = std::numeric_limits<int>::max();
@@ -38,10 +38,10 @@ void EdgeMerger::mergeVectors(vector< vector<vertexid_t> > &edgeVecsToMerge,
 			}
 
 			int indOfTgt = tgt.getMinSetID();
-			processMinSets(srcMS, tgt, edgeVecsToMerge[srcID], valVecsToMerge[srcID], edgeVecsToMerge[indOfTgt], valVecsToMerge[indOfTgt], srcDeltaEdges, srcDeltaVals, srcoUnUdEdges, srcoUnUdVals);
+			processMinSets(srcMS, tgt, edgeVecsToMerge[srcID], valVecsToMerge[srcID], constrVecsToMerge[srcID], edgeVecsToMerge[indOfTgt], valVecsToMerge[indOfTgt], constrVecsToMerge[indOfTgt], srcDeltaEdges, srcDeltaVals, srcDeltaConstrs, srcoUnUdEdges, srcoUnUdVals, srcoUnUdConstrs);
 		}
 
-		removeExtraSpace(srcDeltaEdges, srcDeltaVals, srcoUnUdEdges, srcoUnUdVals);
+		removeExtraSpace(srcDeltaEdges, srcDeltaVals, srcDeltaConstrs, srcoUnUdEdges, srcoUnUdVals, srcoUnUdConstrs);
 	}
 
 
@@ -51,21 +51,22 @@ void EdgeMerger::mergeVectors(vector< vector<vertexid_t> > &edgeVecsToMerge,
 	* space in the vectors accordingly
 	*/
 	void EdgeMerger::fillPriorityQueue(vector< vector<vertexid_t> > &edgeVecsToMerge, vector< vector<label_t> > &valVecsToMerge,
-		vector<vertexid_t> &srcDeltaEdges, vector<label_t> &srcDeltaVals, vector<vertexid_t> &srcoUnUdEdges, vector<label_t> &srcoUnUdVals,
-		vertexid_t srcID)
+			vector< vector<PseudoPC> > &constrVecsToMerge, vector<vertexid_t> &srcDeltaEdges, vector<label_t> &srcDeltaVals,
+			vector<PseudoPC> &srcDeltaConstrs, vector<vertexid_t> &srcoUnUdEdges, vector<label_t> &srcoUnUdVals,
+			vector<PseudoPC> &srcoUnUdConstrs, vertexid_t srcID)
 		{
 			MinSet newminset;
 			int totTgtRowSize = 0;
 			for (int i = 1; i < edgeVecsToMerge.size(); i++)
 			{
 				newminset.setMinSetID(i);
-				updateMinSet(newminset, edgeVecsToMerge[i], valVecsToMerge[i]);
+				updateMinSet(newminset, edgeVecsToMerge[i], valVecsToMerge[i], constrVecsToMerge[i]);
 
 				totTgtRowSize += edgeVecsToMerge[i].size();
 				minEdges.push(newminset);
 				newminset.resetPtr();
 			}
-			
+
 			srcDeltaEdges.reserve(totTgtRowSize);
 			srcDeltaVals.reserve(totTgtRowSize);
 
@@ -81,7 +82,9 @@ void EdgeMerger::mergeVectors(vector< vector<vertexid_t> > &edgeVecsToMerge,
 		/**
 		* remove the excess space created when duplicate values were removed
 		*/
-		void EdgeMerger::removeExtraSpace(vector<vertexid_t> &srcDeltaEdges, vector<label_t> &srcDeltaVals, vector<vertexid_t> &srcoUnUdEdges, vector<label_t> &srcoUnUdVals)
+		void EdgeMerger::removeExtraSpace(vector<vertexid_t> &srcDeltaEdges, vector<label_t> &srcDeltaVals,
+				vector<PseudoPC> &srcDeltaConstrs, vector<vertexid_t> &srcoUnUdEdges,
+				vector<label_t> &srcoUnUdVals, vector<PseudoPC> &srcoUnUdConstrs)
 		{
 			// TODO: this happens no matter what right now. Use a conditional statement to stop this from
 			// happening every time and avoid excessive copying!
@@ -95,7 +98,8 @@ void EdgeMerger::mergeVectors(vector< vector<vertexid_t> > &edgeVecsToMerge,
 		/**
 		* for the given minset, find the next minimum value and any corresponding values
 		*/
-		void EdgeMerger::updateMinSet(MinSet &minset, vector<vertexid_t> &edges, vector<label_t> &vals)
+		void EdgeMerger::updateMinSet(MinSet &minset, vector<vertexid_t> &edges, vector<label_t> &vals,
+			vector<PseudoPC> &constrs)
 		{
 			minset.setCurrVID(std::numeric_limits<int>::max());		// set the VID as the max so all values will be smaller
 			minset.clearEvalSet();		// because it is a new vertex, get rid of any values in the edge value set
@@ -104,7 +108,8 @@ void EdgeMerger::mergeVectors(vector< vector<vertexid_t> > &edgeVecsToMerge,
 			{																							// associated with a
 				minset.setCurrVID(edges[i]);															// specific edge value
 				minset.addEval(vals[i]);																// and store them in the
-				minset.incPtr();																		// minset
+				minset.setPC(constrs[i]);																// minset
+				minset.incPtr();
 			}
 		}
 
@@ -112,9 +117,10 @@ void EdgeMerger::mergeVectors(vector< vector<vertexid_t> > &edgeVecsToMerge,
 		* compare the next smallest target minset with the source minset to determine which vector to update
 		*/
 		void EdgeMerger::processMinSets(MinSet &srcMS, MinSet &tgtMS, vector<vertexid_t> &srcEdgesToMerge,
-			vector<label_t> &srcValsToMerge, vector<vertexid_t> &tgtEdgesToMerge,
-			vector<label_t> &tgtValsToMerge, vector<vertexid_t> &srcDeltaEdges, vector<label_t> &srcDeltaVals,
-			vector<vertexid_t> &srcoUnUdEdges, vector<label_t> &srcoUnUdVals)
+			vector<label_t> &srcValsToMerge, vector<PseudoPC> &srcConstrsToMerge, vector<vertexid_t> &tgtEdgesToMerge,
+			vector<label_t> &tgtValsToMerge, vector<PseudoPC> &tgtConstrsToMerge, vector<vertexid_t> &srcDeltaEdges,
+			vector<label_t> &srcDeltaVals, vector<PseudoPC> &srcDeltaConstrs, vector<vertexid_t> &srcoUnUdEdges,
+			vector<label_t> &srcoUnUdVals, vector<PseudoPC> &srcoUnUdConstrs)
 			{
 				// case 1 - the target vertexID is smaller than the source vertexID
 				if (srcMS.getCurrVID() > tgtMS.getCurrVID()) {
@@ -127,12 +133,12 @@ void EdgeMerger::mergeVectors(vector< vector<vertexid_t> > &edgeVecsToMerge,
 					for (vector<label_t>::iterator iter = tgtVals.begin(); iter != tgtVals.end(); iter++)
 					{
 						if (find_val(currEvals, *iter)) {
-							updateVector(tgtMS.getCurrVID(), *iter, srcoUnUdEdges, srcoUnUdVals, oUnUdPtr);		// if not add to both oUnUd
-							updateVector(tgtMS.getCurrVID(), *iter, srcDeltaEdges, srcDeltaVals, deltaPtr);		// and Delta
+							updateVector(tgtMS.getCurrVID(), *iter, tgtMS.getPC(), srcoUnUdEdges, srcoUnUdVals, srcoUnUdConstrs, oUnUdPtr);		// if not add to both oUnUd
+							updateVector(tgtMS.getCurrVID(), *iter, tgtMS.getPC(), srcDeltaEdges, srcDeltaVals, srcDeltaConstrs, deltaPtr);		// and Delta
 							currEvals.push_back(*iter);				// insert edge value into currEvals to mark as already used
 						}
 					}
-					updateMinSet(tgtMS, tgtEdgesToMerge, tgtValsToMerge);
+					updateMinSet(tgtMS, tgtEdgesToMerge, tgtValsToMerge, tgtConstrsToMerge);
 					minEdges.push(tgtMS);
 
 					return;
@@ -151,13 +157,13 @@ void EdgeMerger::mergeVectors(vector< vector<vertexid_t> > &edgeVecsToMerge,
 					{
 						if (find_val(srcVals, *iter)) {
 							if (find_val(currEvals, *iter)) {
-								updateVector(tgtMS.getCurrVID(), *iter, srcoUnUdEdges, srcoUnUdVals, oUnUdPtr);
-								updateVector(tgtMS.getCurrVID(), *iter, srcDeltaEdges, srcDeltaVals, deltaPtr);
+								updateVector(tgtMS.getCurrVID(), *iter, tgtMS.getPC(), srcoUnUdEdges, srcoUnUdVals, srcoUnUdConstrs, oUnUdPtr);		// if not add to both oUnUd
+								updateVector(tgtMS.getCurrVID(), *iter, tgtMS.getPC(), srcDeltaEdges, srcDeltaVals, srcDeltaConstrs, deltaPtr);		// and Delta
 								currEvals.push_back(*iter);
 							}
 						}
 					}
-					updateMinSet(tgtMS, tgtEdgesToMerge, tgtValsToMerge);
+					updateMinSet(tgtMS, tgtEdgesToMerge, tgtValsToMerge, tgtConstrsToMerge);
 					minEdges.push(tgtMS);
 
 					return;
@@ -174,11 +180,11 @@ void EdgeMerger::mergeVectors(vector< vector<vertexid_t> > &edgeVecsToMerge,
 					for (vector<label_t>::iterator iter = srcVals.begin(); iter != srcVals.end(); iter++)
 					{
 						if (find_val(currEvals, *iter)) {
-							updateVector(srcMS.getCurrVID(), *iter, srcoUnUdEdges, srcoUnUdVals, oUnUdPtr);		// only add to oUnUd
+							updateVector(srcMS.getCurrVID(), *iter, srcMS.getPC(), srcoUnUdEdges, srcoUnUdVals, srcoUnUdConstrs, oUnUdPtr);		// only add to oUnUd
 							currEvals.push_back(*iter);															// because not new
 						}
 					}
-					updateMinSet(srcMS, srcEdgesToMerge, srcValsToMerge);
+					updateMinSet(srcMS, srcEdgesToMerge, srcValsToMerge, srcConstrsToMerge);
 					minEdges.push(tgtMS);
 
 					return;
@@ -188,9 +194,10 @@ void EdgeMerger::mergeVectors(vector< vector<vertexid_t> > &edgeVecsToMerge,
 			/**
 			* increment the pointer, then add the vertexID and the edge value into the vector
 			*/
-			void EdgeMerger::updateVector(vertexid_t vid, label_t val, vector<vertexid_t> &edges, vector<label_t> &vals, int &ptr)
+			void EdgeMerger::updateVector(vertexid_t vid, label_t val, PseudoPC constr, vector<vertexid_t> &edges, vector<label_t> &vals, vector<PseudoPC> &constrs, int &ptr)
 			{
 				ptr++;
 				edges[ptr] = vid;
 				vals[ptr] = val;
+				constrs[ptr] = constr;
 			}

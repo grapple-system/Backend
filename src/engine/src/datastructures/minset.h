@@ -5,16 +5,19 @@
 #include <string>
 #include <sstream>
 
+#include "../../../constraint/pseudoPC.hpp"
+
 #include "../utilities/globalDefinitions.hpp"
 
 class MinSet
 {
 	int ptr;				// pointer into the current vector of edges
-	
+
 	int minSetID;			// index in the vectors to merge of the current minset
 	int currentVID;			// current value of the minset
 
-	vector<char> evals;		// all possible edge values for the current VID
+	vector<label_t> evals;		// all possible edge values for the current VID
+	PseudoPC constraint;			// current constraint of edge
 
 
 	public:
@@ -26,16 +29,18 @@ class MinSet
 	inline int getCurrVID() const { return currentVID; }
 	inline int getPtr() { return ptr; }
 	inline vector<char> &getEvals() { return evals; }
+	inline PseudoPC getPC() { return constraint; }
 
 	// setters
 	inline void setMinSetID(int id) { minSetID = id; }
 	inline void setCurrVID(int vid) { currentVID = vid; }
+	inline void setPC(PseudoPC c) { constraint = c; }
 	inline void resetPtr() { ptr = 0; }
 
 	inline void incPtr() { ptr++; }
 	inline void addEval(char eval) { evals.push_back(eval); }
 	inline void clearEvalSet() { evals.clear(); }
-	
+
 	string toString();
 };
 

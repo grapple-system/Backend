@@ -1,5 +1,5 @@
 CC=g++ -std=c++0x
-LIBFLAGS=-lboost_thread-mt -lpthread -lboost_system
+LIBFLAGS=-lboost_thread -lpthread -lboost_system
 #use path according to boost installation directory in user machine
 #export LD_LIBRARY_PATH=/home/aftab/Downloads/boost_1.62_installed/lib:$LD_LIBRARY_PATH
 

@@ -9,8 +9,6 @@
 #include <queue>
 
 #include "../../../constraint/pseudoPC.hpp"
-#include "../../../constraint/seg.hpp"
-#include "../../../constraint/realPC.hpp"
 
 #include "../datastructures/minset.h"
 #include "../../test/timer.h"
@@ -29,21 +27,25 @@ class EdgeMerger
 
 	// FUNCTIONS
 	void fillPriorityQueue(vector< vector<vertexid_t> > &edgeVecsToMerge, vector< vector<label_t> > &valVecsToMerge,
-			vector<vertexid_t> &srcDeltaEdges, vector<label_t> &srcDeltaVals, vector<vertexid_t> &srcoUnUdEdges, vector<label_t> &srcoUnUdVals,
-			int srcID);
+			vector< vector<PseudoPC> > &constrVecsToMerge, vector<vertexid_t> &srcDeltaEdges, vector<label_t> &srcDeltaVals,
+			vector<PseudoPC> &srcDeltaConstrs, vector<vertexid_t> &srcoUnUdEdges, vector<label_t> &srcoUnUdVals,
+			vector<PseudoPC> &srcoUnUdConstrs, vertexid_t srcID);
 
-	bool find_val(vector<label_t> &evals, char val);
+	bool find_val(vector<label_t> &evals, label_t val);
 
-	void removeExtraSpace(vector<vertexid_t> &srcDeltaEdges, vector<label_t> &srcDeltaVals, vector<vertexid_t> &srcoUnUdEdges, vector<label_t> &srcoUnUdVals);
+	void removeExtraSpace(vector<vertexid_t> &srcDeltaEdges, vector<label_t> &srcDeltaVals,
+			vector<PseudoPC> &srcDeltaConstrs, vector<vertexid_t> &srcoUnUdEdges,
+			vector<label_t> &srcoUnUdVals, vector<PseudoPC> &srcoUnUdConstrs);
 
-	void updateMinSet(MinSet &minset, vector<vertexid_t> &edges, vector<label_t> &vals);
+	void updateMinSet(MinSet &minset, vector<vertexid_t> &edges, vector<label_t> &vals, vector<PseudoPC> &constrs);
 
 	void processMinSets(MinSet &srcMS, MinSet &tgtMS, vector<vertexid_t> &srcEdgesToMerge,
-		vector<label_t> &srcValsToMerge, vector<vertexid_t> &tgtEdgesToMerge,
-		vector<label_t> &tgtValsToMerge, vector<vertexid_t> &srcDeltaEdges, vector<label_t> &srcDeltaVals,
-		vector<vertexid_t> &srcoUnUdEdges, vector<label_t> &srcoUnUdVals);
+		vector<label_t> &srcValsToMerge, vector<PseudoPC> &srcConstrsToMerge, vector<vertexid_t> &tgtEdgesToMerge,
+		vector<label_t> &tgtValsToMerge, vector<PseudoPC> &tgtConstrsToMerge, vector<vertexid_t> &srcDeltaEdges,
+		vector<label_t> &srcDeltaVals, vector<PseudoPC> &srcDeltaConstrs, vector<vertexid_t> &srcoUnUdEdges,
+		vector<label_t> &srcoUnUdVals, vector<PseudoPC> &srcoUnUdConstrs);
 
-	void updateVector(int vid, char val, vector<vertexid_t> &edges, vector<label_t> &vals, int &ptr);
+	void updateVector(vertexid_t vid, label_t val, PseudoPC constr, vector<vertexid_t> &edges, vector<label_t> &vals, vector<PseudoPC> &constrs, int &ptr);
 
 	public:
 	// constructor
