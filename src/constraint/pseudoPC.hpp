@@ -18,6 +18,9 @@ class PseudoPC
 public:
     PseudoPC() {}
     PseudoPC(std::string constr);
+
+    PseudoPC(PseudoPC c1, PseudoPC c2);   // create PseudoPC that is
+                                                    // combination fo two others
 };
 
 

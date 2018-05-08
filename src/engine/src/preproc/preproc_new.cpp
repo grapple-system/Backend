@@ -1,8 +1,8 @@
 #include "preproc_new.h"
 
 
-void quickSort(vector<vertexid_t>&, vector<label_t>&, int, int);
-int partition(vector<vertexid_t>&, vector<label_t>&, int, int);
+void quickSort(vector<vertexid_t>&, vector<label_t>&, vector<string>&, int, int);
+int partition(vector<vertexid_t>&, vector<label_t>&, vector<string>&, int, int);
 
 Preproc_new::Preproc_new(Context &context) {
 	vitSize = 0;

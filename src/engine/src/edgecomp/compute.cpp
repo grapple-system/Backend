@@ -9,20 +9,21 @@ long updateEdges(int vertInd, ComputationSet compsets[], LoadedVertexInterval in
 
 void getEdgesToMerge(ComputationSet *compSet, ComputationSet compsets[],
 		LoadedVertexInterval intervals[], bool oldEdgesEmpty, bool newEdgesEmpty,
-		vector< vector<int> > &edgeVecsToMerge, vector< vector<char> > &valVecsToMerge,
-		int &rowMergeID, Context &context);
+		vector< vector<vertexid_t> > &edgeVecsToMerge, vector< vector<label_t> > &valVecsToMerge,
+		vector< vector<PseudoPC> > &constrVecsToMerge, int &rowMergeID, Context &context);
 
-void genS_RuleEdges(vector<int> &newEdges, vector<char> &newVals,
-		vector< vector<int> > &edgeVecsToMerge, vector< vector<char> > &valVecsToMerge,
-		int &rowMergeID, Context &context);
+void genS_RuleEdges(vector<vertexid_t> &newEdges, vector<label_t> &newVals, vector<PseudoPC> &newConstrs,
+		vector< vector<vertexid_t> > &edgeVecsToMerge, vector< vector<label_t> > &valVecsToMerge,
+		vector< vector<PseudoPC> > &constrVecsToMerge, int &rowMergeID, Context &context);
 
-void genD_RuleEdges(ComputationSet compsets[], LoadedVertexInterval intervals[], vector<int> &edges,
-		vector<char> &vals, vector< vector<int> > &edgeVecsToMerge,
-		vector< vector<char> > &valVecsTomerge, int &rowMergeID, Context &context, char flag);
+void genD_RuleEdges(ComputationSet compsets[], LoadedVertexInterval intervals[], vector<vertexid_t> &edges,
+		vector<label_t> &vals, vector<PseudoPC> &constrs, vector< vector<vertexid_t> > &edgeVecsToMerge,
+		vector< vector<label_t> > &valVecsTomerge, vector< vector<PseudoPC> > &constrVecsToMerge,
+		int &rowMergeID, Context &context, char flag);
 
-void checkEdges(int dstInd, char dstVal, ComputationSet compsets[],
-		vector< vector<int> > &edgeVecsToMerge, vector< vector<char> > &valVecsToMerge, int &rowMergeID,
-		Context &context, char flag);
+void checkEdges(vertexid_t dstInd, label_t dstVal, PseudoPC dstConstr, ComputationSet compsets[],
+		vector< vector<vertexid_t> > &edgeVecsToMerge, vector< vector<label_t> > &valVecsToMerge,
+		vector< vector<PseudoPC> > &constrVecsToMerge, int &rowMergeID, Context &context, char flag);
 
 // PRINT EDGES FOR DEBUGGING
 void print_edges(vector<vector<int>> &edgeVecsToMerge, vector<vector<char>> &valVecsToMerge)
@@ -64,7 +65,7 @@ long updateEdges(int vertInd, ComputationSet compsets[], LoadedVertexInterval in
 	int numRowsToMerge = 8;
 	vector< vector<vertexid_t> > edgeVecsToMerge(numRowsToMerge);
 	vector< vector<label_t> > valVecsToMerge(numRowsToMerge);
-	vector< vector<PsuedoPC> > constrVecsToMerge(numRowsToMerge);
+	vector< vector<PseudoPC> > constrVecsToMerge(numRowsToMerge);
 
 	// set edgeVecsToMerge[0] equal to the current vertex's outgoing edges
 	int rowMergeID = 0;
@@ -85,7 +86,7 @@ long updateEdges(int vertInd, ComputationSet compsets[], LoadedVertexInterval in
 	vector<label_t>	&srcoUnUdVals = compSet->getoUnUdVals();
 	vector<PseudoPC> &srcoUnUdConstrs = compSet->getoUnUdConstr();
 
-	em.mergeVectors(edgeVecsToMerge, valVecsToMerge, constrVecsToMerge, srcDeltaEdges, srcDeltaVals, srcoUnUdEdges, srcoUnUdVals, srcoUnUdConstrs, 0);
+	em.mergeVectors(edgeVecsToMerge, valVecsToMerge, constrVecsToMerge, srcDeltaEdges, srcDeltaVals, srcDeltaConstrs, srcoUnUdEdges, srcoUnUdVals, srcoUnUdConstrs, 0);
 
 	return em.getNumNewEdges();
 }
@@ -112,19 +113,19 @@ void getEdgesToMerge(ComputationSet *compSet, ComputationSet compsets[],
 
 	vector<vertexid_t> &newEdges = compSet->getNewEdges();
 	vector<label_t> &newVals = compSet->getNewVals();
-	vector<PsuedoPC> &newConstrs = compSet->getNewConstr();
+	vector<PseudoPC> &newConstrs = compSet->getNewConstr();
 
 	// look through new edges of current vertex to see if any S-Rules
 	if (!newEdgesEmpty)
-		genS_RuleEdges(newEdges, newVals, edgeVecsToMerge, valVecsToMerge, constrVecsToMerge, rowMergeID, context);
+		genS_RuleEdges(newEdges, newVals, newConstrs, edgeVecsToMerge, valVecsToMerge, constrVecsToMerge, rowMergeID, context);
 
 	// look through old edges of current vertex to check if any are in a partition that is currently in memory
 	if (!oldEdgesEmpty)
-		genD_RuleEdges(compsets, intervals, oldEdges, oldVals, edgeVecsToMerge, valVecsToMerge, constrVecsToMerge, rowMergeID, context, 'o');
+		genD_RuleEdges(compsets, intervals, oldEdges, oldVals, oldConstrs, edgeVecsToMerge, valVecsToMerge, constrVecsToMerge, rowMergeID, context, 'o');
 
 	// look through new edges of current vertex to check if any are in a partition that is currenlty in memory
 	if (!newEdgesEmpty)
-		genD_RuleEdges(compsets, intervals, newEdges, newVals, edgeVecsToMerge, valVecsToMerge, constrVecsToMerge, rowMergeID, context, 'n');
+		genD_RuleEdges(compsets, intervals, newEdges, newVals, newConstrs, edgeVecsToMerge, valVecsToMerge, constrVecsToMerge, rowMergeID, context, 'n');
 }
 
 /**
@@ -138,7 +139,7 @@ void getEdgesToMerge(ComputationSet *compSet, ComputationSet compsets[],
  * @param rowMergeID			-current row of vector to add
  * @param context					-grammar checker
  */
-void genS_RuleEdges(vector<vertexid_t> &newEdges, vector<label_t> &newVals,
+void genS_RuleEdges(vector<vertexid_t> &newEdges, vector<label_t> &newVals, vector<PseudoPC> &newConstrs,
 		vector< vector<vertexid_t> > &edgeVecsToMerge, vector< vector<label_t> > &valVecsToMerge,
 		vector< vector<PseudoPC> > &constrVecsToMerge, int &rowMergeID, Context &context)
 {
@@ -149,10 +150,12 @@ void genS_RuleEdges(vector<vertexid_t> &newEdges, vector<label_t> &newVals,
 		if (newEdgeVal != (char)-1) {
 			edgeVecsToMerge[rowMergeID].push_back(newEdges[i]);
 			valVecsToMerge[rowMergeID].push_back(newEdgeVal);
+			constrVecsToMerge[rowMergeID].push_back(newConstrs[i]);
+
 			added = true;
 		}
-	}
 	if (added) rowMergeID++;
+	}
 }
 
 /**
@@ -160,8 +163,8 @@ void genS_RuleEdges(vector<vertexid_t> &newEdges, vector<label_t> &newVals,
  * is currently loaded into memory. If so, check the DESTINATION VERTEX's outgoing edges for D-Rules
  */
 void genD_RuleEdges(ComputationSet compsets[], LoadedVertexInterval intervals[], vector<vertexid_t> &edges,
-		vector<label_t> &vals, vector< vector<vertexid_t> > &edgeVecsToMerge,
-		vector< vector<label_t> > &valVecsToMerge, vector< vector<PsuedoPC> > &constrVecsToMerge,
+		vector<label_t> &vals, vector<PseudoPC> &constrs, vector< vector<vertexid_t> > &edgeVecsToMerge,
+		vector< vector<label_t> > &valVecsToMerge, vector< vector<PseudoPC> > &constrVecsToMerge,
 		int &rowMergeID, Context &context, char flag)
 {
 	vertexid_t dstInd;
@@ -177,9 +180,9 @@ void genD_RuleEdges(ComputationSet compsets[], LoadedVertexInterval intervals[],
 					constrVecsToMerge.push_back( vector<PseudoPC>() );
 				}
 				if (flag == 'o' && compsets[dstInd].getNewEdges().size() > 0)
-					checkEdges(dstInd, vals[i], compsets, edgeVecsToMerge, valVecsToMerge, constrVecsToMerge, rowMergeID, context, flag);
+					checkEdges(dstInd, vals[i], constrs[i], compsets, edgeVecsToMerge, valVecsToMerge, constrVecsToMerge, rowMergeID, context, flag);
 				else if (flag == 'n' && compsets[dstInd].getoldUnewEdges().size() > 0)
-					checkEdges(dstInd, vals[i], compsets, edgeVecsToMerge, valVecsToMerge, constrVecsToMerge, rowMergeID, context, flag);
+					checkEdges(dstInd, vals[i], constrs[i], compsets, edgeVecsToMerge, valVecsToMerge, constrVecsToMerge, rowMergeID, context, flag);
 			}
 		}
 	}
@@ -189,7 +192,7 @@ void genD_RuleEdges(ComputationSet compsets[], LoadedVertexInterval intervals[],
  * given an index into the ComputationSet list, and the edge value of that vertex, check if any of
  * the outgoing edges fit the context grammar and if so add them to the vector to be merged with the source
  */
-void checkEdges(vertexid_t dstInd, label_t dstVal, ComputationSet compsets[],
+void checkEdges(vertexid_t dstInd, label_t dstVal, PseudoPC dstConstr, ComputationSet compsets[],
 		vector< vector<vertexid_t> > &edgeVecsToMerge, vector< vector<label_t> > &valVecsToMerge,
 		vector< vector<PseudoPC> > &constrVecsToMerge, int &rowMergeID, Context &context, char flag)
 {
@@ -203,9 +206,13 @@ void checkEdges(vertexid_t dstInd, label_t dstVal, ComputationSet compsets[],
 	{
 		newVal = context.grammar.checkRules(dstVal, vals[i]);   // check if  ( dstVal  ->  vals[i] ) == newVal
 		if (newVal != (char)-1) {
-			edgeVecsToMerge[rowMergeID].push_back(edges[i]);
-			valVecsToMerge[rowMergeID].push_back(newVal);
-			added = true;
+			if (context.seg.solve(dstConstr, constrs[i])) {
+				edgeVecsToMerge[rowMergeID].push_back(edges[i]);
+				valVecsToMerge[rowMergeID].push_back(newVal);
+				constrVecsToMerge[rowMergeID].push_back(PseudoPC(dstConstr, constrs[i]));
+
+				added = true;
+			}
 		}
 	}
 	if (added) rowMergeID++;

@@ -169,12 +169,11 @@ bool Loader::loadPartition(partitionid_t id, Partition &p, bool readable, Contex
 			p.setNumVertices(numVertices);
 			fclose(fp);
 			return 1;
-//		}
+		}
 		else {
 			#if DEBUG
 			assert(false, "cant open bin file " + id);
 			#endif
 		}
-	}
 	return 0; // this is dead code!!!
 }

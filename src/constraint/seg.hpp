@@ -15,11 +15,13 @@ class SEGraph {
 private:
   RealPC retrieveConstraint(PseudoPC constRep);
 
+
 public:
   SEGraph() {}
   SEGraph(std::string filename);
 
-  bool solve(RealPC pathConst);  // place holder for constraint solver
+  bool solve(PseudoPC constr1, PseudoPC constr2);  // place holder for constraint solver
+  
 };
 
 

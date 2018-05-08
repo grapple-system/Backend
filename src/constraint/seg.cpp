@@ -7,3 +7,7 @@ SEGraph::SEGraph(std::string filename) {
 RealPC SEGraph::retrieveConstraint(PseudoPC constRep) {
 
 }
+
+bool SEGraph::solve(PseudoPC constr1, PseudoPC constr2) {
+  return true;
+}

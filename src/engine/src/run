@@ -19,10 +19,10 @@ rm -f $1.[dpv]*
 #PID=0
 #trap "{ kill $PID; exit 12; }" EXIT SIGINT SIGQUIT 
 
-echo "RUN ON COMPUTER: "$(hostname) > log/cpp.$MEMBUDGET.$NUMPARTITIONS.output
-echo >> log/cpp.$MEMBUDGET.$NUMPARTITIONS.output
-echo "RUN ON COMPUTER: "$(hostname) > log/pmap.$MEMBUDGET.$NUMPARTITIONS.output
-echo >> log/pmap.$MEMBUDGET.$NUMPARTITIONS.output
+#echo "RUN ON COMPUTER: "$(hostname) > log/cpp.$MEMBUDGET.$NUMPARTITIONS.output
+#echo >> log/cpp.$MEMBUDGET.$NUMPARTITIONS.output
+#echo "RUN ON COMPUTER: "$(hostname) > log/pmap.$MEMBUDGET.$NUMPARTITIONS.output
+#echo >> log/pmap.$MEMBUDGET.$NUMPARTITIONS.output
 
 echo "running..."
 ../bin/comp numPartitions=$NUMPARTITIONS insertionSort=false alterSchedule=false memBudget=$MEMBUDGET inputGraph=$INPGRAPH grammar=$GRAMMAR numThreads=$NUMTHREADS #>> log/cpp.$MEMBUDGET.$NUMPARTITIONS.output &

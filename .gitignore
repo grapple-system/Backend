@@ -1,3 +1,5 @@
 /Debug/
 
 src/engine/bin/
+src/engine/src/makefile
+src/engine/src/res/
