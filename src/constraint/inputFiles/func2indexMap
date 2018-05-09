@@ -1,0 +1,5 @@
+0 : <Test4: void <init>()>
+1 : <Test4: int multiply(int,int)>
+2 : <Test4: int add(int,int)>
+3 : <Test4: Test2 createTest2(Test2,java.lang.String)>
+4 : <Test4: void main(java.lang.String[])>

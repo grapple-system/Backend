@@ -1,0 +1,61 @@
+<Test4: void <init>()>
+{"stateNode": {"conditional": null, "callsites": [{"signature": "<java.lang.Object: void <init>()>", "callee": "this = $R$@this", "argumentsMap": null, "retVar": null}], "returnExp": null}}
+{"stateNode": null}
+{"stateNode": null}
+
+<Test4: int multiply(int,int)>
+{"stateNode": {"conditional": null, "callsites": null, "returnExp": "($I$@para0 * $I$@para1)"}}
+{"stateNode": null}
+{"stateNode": null}
+
+<Test4: int add(int,int)>
+{"stateNode": {"conditional": "($I$@para0 <= $I$@para1)", "callsites": null, "returnExp": null}}
+{"stateNode": {"conditional": null, "callsites": null, "returnExp": "($I$@para0 + $I$@para1)"}}
+{"stateNode": null}
+{"stateNode": null}
+{"stateNode": {"conditional": null, "callsites": null, "returnExp": "($I$@para0 - $I$@para1)"}}
+{"stateNode": null}
+{"stateNode": null}
+
+<Test4: Test2 createTest2(Test2,java.lang.String)>
+{"stateNode": {"conditional": "(not ($R$@para1 = soot.jimple.StringConstant@2008915113))", "callsites": null, "returnExp": null}}
+{"stateNode": {"conditional": null, "callsites": null, "returnExp": "$R$@para0"}}
+{"stateNode": null}
+{"stateNode": null}
+{"stateNode": {"conditional": null, "callsites": [{"signature": "<java.io.PrintStream: void print(java.lang.String)>", "callee": null, "argumentsMap": ["s = $R$@para1"], "retVar": null}], "returnExp": "$R$@para0"}}
+{"stateNode": null}
+{"stateNode": null}
+
+<Test4: void main(java.lang.String[])>
+{"stateNode": {"conditional": "(5 >= 5)", "callsites": [{"signature": "<Test4: void <init>()>", "callee": "$r0 = $R$0", "argumentsMap": null, "retVar": null}, {"signature": "<Test2: void <init>(int)>", "callee": "$r1 = $R$1", "argumentsMap": ["1 = 1"], "retVar": null}, {"signature": "<Test2: int getA()>", "callee": "t2 = $R$1", "argumentsMap": null, "retVar": "$i0"}, {"signature": "<Test4: int add(int,int)>", "callee": "t4 = $R$0", "argumentsMap": ["2 = 2", "$i0 = $I$@ret2"], "retVar": "$i1"}], "returnExp": null}}
+{"stateNode": {"conditional": "(5 <= 3)", "callsites": [{"signature": "<Test2: int getA()>", "callee": "t2 = $R$1", "argumentsMap": null, "retVar": "$i1"}, {"signature": "<Test4: int add(int,int)>", "callee": "t4 = $R$0", "argumentsMap": ["x = 5", "$i1 = $I$@ret0"], "retVar": "y"}, {"signature": "<Test2: void <init>(int)>", "callee": "$r2 = $R$2", "argumentsMap": ["y = $I$@ret1"], "retVar": null}, {"signature": "<Test4: Test2 createTest2(Test2,java.lang.String)>", "callee": null, "argumentsMap": ["$r2 = $R$2", "str = soot.jimple.StringConstant@49630171"], "retVar": "$r2"}], "returnExp": null}}
+{"stateNode": {"conditional": "(5 >= 7)", "callsites": [{"signature": "<Test2: int getA()>", "callee": "t2 = $R$1", "argumentsMap": null, "retVar": "$i1"}, {"signature": "<Test4: int add(int,int)>", "callee": "t4 = $R$0", "argumentsMap": ["x = 5", "$i1 = $I$@ret0"], "retVar": "y"}], "returnExp": null}}
+{"stateNode": {"conditional": null, "callsites": [{"signature": "<Test2: int getA()>", "callee": "t2 = $R$1", "argumentsMap": null, "retVar": "$i1"}, {"signature": "<Test4: int add(int,int)>", "callee": "t4 = $R$0", "argumentsMap": ["x = 5", "$i1 = $I$@ret0"], "retVar": "y"}, {"signature": "<Test2: void <init>(int)>", "callee": "$r2 = $R$3", "argumentsMap": ["y = $I$@ret1"], "retVar": null}, {"signature": "<Test4: Test2 createTest2(Test2,java.lang.String)>", "callee": null, "argumentsMap": ["$r2 = $R$3", "str = soot.jimple.StringConstant@49630171"], "retVar": "$r2"}], "returnExp": null}}
+{"stateNode": null}
+{"stateNode": null}
+{"stateNode": {"conditional": null, "callsites": [{"signature": "<Test4: int multiply(int,int)>", "callee": null, "argumentsMap": ["y = $I$@ret1", "x = 5"], "retVar": "y"}, {"signature": "<Test2: void <init>(int)>", "callee": "$r2 = $R$4", "argumentsMap": ["y = $I$@ret0"], "retVar": null}, {"signature": "<Test4: Test2 createTest2(Test2,java.lang.String)>", "callee": null, "argumentsMap": ["$r2 = $R$4", "str = soot.jimple.StringConstant@49630171"], "retVar": "$r2"}], "returnExp": null}}
+{"stateNode": null}
+{"stateNode": null}
+{"stateNode": {"conditional": "(5 >= 7)", "callsites": [{"signature": "<Test4: int multiply(int,int)>", "callee": null, "argumentsMap": ["y = $I$@ret1", "x = 5"], "retVar": "y"}], "returnExp": null}}
+{"stateNode": {"conditional": null, "callsites": [{"signature": "<Test2: int getA()>", "callee": "t2 = $R$1", "argumentsMap": null, "retVar": "$i1"}, {"signature": "<Test4: int add(int,int)>", "callee": "t4 = $R$0", "argumentsMap": ["x = 5", "$i1 = $I$@ret0"], "retVar": "y"}, {"signature": "<Test2: void <init>(int)>", "callee": "$r2 = $R$5", "argumentsMap": ["y = $I$@ret1"], "retVar": null}, {"signature": "<Test4: Test2 createTest2(Test2,java.lang.String)>", "callee": null, "argumentsMap": ["$r2 = $R$5", "str = soot.jimple.StringConstant@49630171"], "retVar": "$r2"}], "returnExp": null}}
+{"stateNode": null}
+{"stateNode": null}
+{"stateNode": {"conditional": null, "callsites": [{"signature": "<Test4: int multiply(int,int)>", "callee": null, "argumentsMap": ["y = $I$@ret0", "x = 5"], "retVar": "y"}, {"signature": "<Test2: void <init>(int)>", "callee": "$r2 = $R$6", "argumentsMap": ["y = $I$@ret0"], "retVar": null}, {"signature": "<Test4: Test2 createTest2(Test2,java.lang.String)>", "callee": null, "argumentsMap": ["$r2 = $R$6", "str = soot.jimple.StringConstant@49630171"], "retVar": "$r2"}], "returnExp": null}}
+{"stateNode": null}
+{"stateNode": null}
+{"stateNode": {"conditional": "(5 <= 3)", "callsites": [{"signature": "<Test4: int multiply(int,int)>", "callee": null, "argumentsMap": ["x = 5", "y = 6"], "retVar": "y"}, {"signature": "<Test2: void <init>(int)>", "callee": "$r2 = $R$7", "argumentsMap": ["y = $I$@ret0"], "retVar": null}, {"signature": "<Test4: Test2 createTest2(Test2,java.lang.String)>", "callee": null, "argumentsMap": ["$r2 = $R$7", "str = soot.jimple.StringConstant@49630171"], "retVar": "$r2"}], "returnExp": null}}
+{"stateNode": {"conditional": "(5 >= 7)", "callsites": [{"signature": "<Test2: int getA()>", "callee": "t2 = $R$1", "argumentsMap": null, "retVar": "$i1"}, {"signature": "<Test4: int add(int,int)>", "callee": "t4 = $R$0", "argumentsMap": ["x = 5", "$i1 = $I$@ret0"], "retVar": "y"}], "returnExp": null}}
+{"stateNode": {"conditional": null, "callsites": [{"signature": "<Test2: int getA()>", "callee": "t2 = $R$1", "argumentsMap": null, "retVar": "$i1"}, {"signature": "<Test4: int add(int,int)>", "callee": "t4 = $R$0", "argumentsMap": ["x = 5", "$i1 = $I$@ret0"], "retVar": "y"}, {"signature": "<Test2: void <init>(int)>", "callee": "$r2 = $R$8", "argumentsMap": ["y = $I$@ret1"], "retVar": null}, {"signature": "<Test4: Test2 createTest2(Test2,java.lang.String)>", "callee": null, "argumentsMap": ["$r2 = $R$8", "str = soot.jimple.StringConstant@49630171"], "retVar": "$r2"}], "returnExp": null}}
+{"stateNode": null}
+{"stateNode": null}
+{"stateNode": {"conditional": null, "callsites": [{"signature": "<Test4: int multiply(int,int)>", "callee": null, "argumentsMap": ["y = $I$@ret1", "x = 5"], "retVar": "y"}, {"signature": "<Test2: void <init>(int)>", "callee": "$r2 = $R$9", "argumentsMap": ["y = $I$@ret0"], "retVar": null}, {"signature": "<Test4: Test2 createTest2(Test2,java.lang.String)>", "callee": null, "argumentsMap": ["$r2 = $R$9", "str = soot.jimple.StringConstant@49630171"], "retVar": "$r2"}], "returnExp": null}}
+{"stateNode": null}
+{"stateNode": null}
+{"stateNode": {"conditional": "(5 >= 7)", "callsites": [{"signature": "<Test4: int multiply(int,int)>", "callee": null, "argumentsMap": ["y = $I$@ret0", "x = 5"], "retVar": "y"}], "returnExp": null}}
+{"stateNode": {"conditional": null, "callsites": [{"signature": "<Test2: int getA()>", "callee": "t2 = $R$1", "argumentsMap": null, "retVar": "$i1"}, {"signature": "<Test4: int add(int,int)>", "callee": "t4 = $R$0", "argumentsMap": ["x = 5", "$i1 = $I$@ret0"], "retVar": "y"}, {"signature": "<Test2: void <init>(int)>", "callee": "$r2 = $R$10", "argumentsMap": ["y = $I$@ret1"], "retVar": null}, {"signature": "<Test4: Test2 createTest2(Test2,java.lang.String)>", "callee": null, "argumentsMap": ["$r2 = $R$10", "str = soot.jimple.StringConstant@49630171"], "retVar": "$r2"}], "returnExp": null}}
+{"stateNode": null}
+{"stateNode": null}
+{"stateNode": {"conditional": null, "callsites": [{"signature": "<Test4: int multiply(int,int)>", "callee": null, "argumentsMap": ["y = $I$@ret0", "x = 5"], "retVar": "y"}, {"signature": "<Test2: void <init>(int)>", "callee": "$r2 = $R$11", "argumentsMap": ["y = $I$@ret0"], "retVar": null}, {"signature": "<Test4: Test2 createTest2(Test2,java.lang.String)>", "callee": null, "argumentsMap": ["$r2 = $R$11", "str = soot.jimple.StringConstant@49630171"], "retVar": "$r2"}], "returnExp": null}}
+{"stateNode": null}
+{"stateNode": null}
+

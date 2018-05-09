@@ -8,11 +8,8 @@
 #ifndef CONSTRAINT_PSEUDOPC_HPP_
 #define CONSTRAINT_PSEUDOPC_HPP_
 
-#include <string>
-#include <list>
-#include "datastructure2/unit.hpp"
-#include <iostream>
-using namespace std;
+#include "datastructures/unit.hpp"
+
 
 class PseudoPC
 {
@@ -20,7 +17,7 @@ class PseudoPC
 
 public:
     PseudoPC() {}
-    PseudoPC(std::string constr);
+    PseudoPC(string constr);
     list<Unit> getUnits(){
         return units;
     }

@@ -8,23 +8,19 @@
 #ifndef CONSTRAINT_SEG_HPP_
 #define CONSTRAINT_SEG_HPP_
 
-#include <fstream>
-#include <iostream>
-using namespace std;
-
 #include "realPC.hpp"
 #include "pseudoPC.hpp"
-#include "datastructure1/stateTree.hpp"
-#include "datastructure2/constraintMaps.hpp"
+#include "datastructures/constraintMaps.hpp"
 
 class SEGraph {
 private:
     ConstraintMaps constraintMaps;
-    list<StateTree> stateTreeList;
 
 public:
     SEGraph() {}
-    SEGraph(std::string filename1, std::string filename2);
+    // file1 is like "Test4.json"
+    // file2 is like "func2indexMap"
+    SEGraph(string filename1, string filename2);
     RealPC retrieveConstraint(PseudoPC constRep);
 
     bool solve(RealPC pathConst);  // place holder for constraint solver

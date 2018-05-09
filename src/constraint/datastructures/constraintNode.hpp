@@ -4,14 +4,7 @@
 #ifndef CONSTRAINTNODE_HPP_
 #define CONSTRAINTNODE_HPP_
 
-#include <map>
-#include <list>
-#include <fstream>
-#include <iostream>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-#include <boost/typeof/typeof.hpp>
-using namespace std;
+#include "../common.hpp"
 
 class ConstraintNode {
 private:
@@ -43,7 +36,7 @@ private:
     list<CallSite> callsites;
 public:
     ConstraintNode(){};
-    ConstraintNode(boost::property_tree::ptree pt);
+    ConstraintNode(ptree pt);
     string getConditional(){
         return conditional;
     }

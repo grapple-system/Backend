@@ -5,8 +5,8 @@
 #include "constraintMaps.hpp"
 
 ConstraintMaps::ConstraintMaps(string filename1, string filename2) {
-    ifstream input1(filename1, std::ios::in);
-    ifstream input2(filename2, std::ios::in);
+    ifstream input1(filename1);
+    ifstream input2(filename2);
     if(!input1) {
         cout<<"Failed to open "<<filename1<<endl;
         if(!input2) {
@@ -55,9 +55,9 @@ ConstraintMaps::ConstraintMaps(string filename1, string filename2) {
 }
 
 string ConstraintMaps::getConstraint(Unit unit) {
-    int funcIndex = unit.getPair1().index1;
-    int start = unit.getPair1().index2;
-    int end = unit.getPair2().index2;
+    int funcIndex = unit.getPair1().first;
+    int start = unit.getPair1().second;
+    int end = unit.getPair2().second;
     if(!constraintMaps[funcIndex].size()) return NULL;
 
     if(start == (end-1)/2){
@@ -90,18 +90,18 @@ string ConstraintMaps::getConstraint(list<Unit> units) {
 }
 
 void ConstraintMaps::setConstraint(map<int, ConstraintNode> &constraintMap, int i, list<string>::iterator &itr) {
-    boost::property_tree::ptree pt;
+    ptree pt;
     string str = *itr;
     ++itr;
 
     stringstream ss(str);
     try{
-        boost::property_tree::read_json(ss, pt);
-    } catch(boost::property_tree::ptree_error & e) {
+        read_json(ss, pt);
+    } catch(ptree_error & e) {
         cout<<"Failed to read json"<<endl;
     }
     try{
-        boost::property_tree::ptree pt1 = pt.get_child("stateNode");
+        ptree pt1 = pt.get_child("stateNode");
         if(pt1.empty()){
             return;
         }else {
@@ -113,7 +113,7 @@ void ConstraintMaps::setConstraint(map<int, ConstraintNode> &constraintMap, int 
             return;
         }
 
-    } catch (boost::property_tree::ptree_error & e) {
+    } catch (ptree_error & e) {
         cout<<"Failed to get value: "<<endl;
     }
 }

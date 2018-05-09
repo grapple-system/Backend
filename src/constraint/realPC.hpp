@@ -7,17 +7,18 @@
 
 #ifndef CONSTRAINT_REALPC_HPP_
 #define CONSTRAINT_REALPC_HPP_
-#include <string>
+
+#include "common.hpp"
 
 class RealPC {
 private:
-    std::string constraint;
+    string constraint;
 public:
     RealPC() {}
-    RealPC(std::string constraint){
+    RealPC(string constraint){
         this->constraint = constraint;
     }
-    std::string getConstraint(){
+    string getConstraint(){
         return constraint;
     }
 };

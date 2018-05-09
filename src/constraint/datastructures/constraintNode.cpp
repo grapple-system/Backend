@@ -4,7 +4,7 @@
 
 #include "constraintNode.hpp"
 
-ConstraintNode::ConstraintNode(boost::property_tree::ptree pt) {
+ConstraintNode::ConstraintNode(ptree pt) {
     try{
         //set conditional
         this->conditional = pt.get<string>("conditional");
@@ -12,7 +12,7 @@ ConstraintNode::ConstraintNode(boost::property_tree::ptree pt) {
             this->conditional.clear();
         }
         //set callSites
-        boost::property_tree::ptree pt1 = pt.get_child("callsites");
+        ptree pt1 = pt.get_child("callsites");
         if(pt1.empty()){
             this->callsites.clear();
         } else {
@@ -29,7 +29,7 @@ ConstraintNode::ConstraintNode(boost::property_tree::ptree pt) {
                 }
                 //argumentsMap
                 list<string> argList;
-                boost::property_tree::ptree pt2 = pos->second.get_child("argumentsMap");
+                ptree pt2 = pos->second.get_child("argumentsMap");
                 if(pt2.empty()) {
                     argList.clear();
                 }else {
@@ -54,7 +54,7 @@ ConstraintNode::ConstraintNode(boost::property_tree::ptree pt) {
         }
         return;
 
-    } catch (boost::property_tree::ptree_error & e) {
+    } catch (ptree_error & e) {
         cout<<"Failed to get value: "<<endl;
     }
 }
