@@ -19,8 +19,7 @@ public:
     PseudoPC() {}
     PseudoPC(std::string constr);
 
-    PseudoPC(PseudoPC c1, PseudoPC c2);   // create PseudoPC that is
-                                                    // combination fo two others
+    static PseudoPC combineConstraints(PseudoPC c1, PseudoPC c2);
 };
 
 

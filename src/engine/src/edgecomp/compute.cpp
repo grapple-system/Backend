@@ -206,10 +206,14 @@ void checkEdges(vertexid_t dstInd, label_t dstVal, PseudoPC dstConstr, Computati
 	{
 		newVal = context.grammar.checkRules(dstVal, vals[i]);   // check if  ( dstVal  ->  vals[i] ) == newVal
 		if (newVal != (char)-1) {
-			if (context.seg.solve(dstConstr, constrs[i])) {
+			RealPC rc1 = context.seg.retrieveConstraint(dstConstr);
+			RealPC rc2 = context.seg.retrieveConstraint(constrs[i]);
+			if (context.seg.solve(rc1, rc2)) {
 				edgeVecsToMerge[rowMergeID].push_back(edges[i]);
 				valVecsToMerge[rowMergeID].push_back(newVal);
-				constrVecsToMerge[rowMergeID].push_back(PseudoPC(dstConstr, constrs[i]));
+
+				PseudoPC newConstr = PseudoPC::combineConstraints(dstConstr, constrs[i]);
+				constrVecsToMerge[rowMergeID].push_back(newConstr);
 
 				added = true;
 			}

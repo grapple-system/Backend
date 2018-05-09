@@ -12,16 +12,15 @@
 #include "pseudoPC.hpp"
 
 class SEGraph {
-private:
-  RealPC retrieveConstraint(PseudoPC constRep);
-
 
 public:
   SEGraph() {}
   SEGraph(std::string filename);
 
-  bool solve(PseudoPC constr1, PseudoPC constr2);  // place holder for constraint solver
-  
+  RealPC retrieveConstraint(PseudoPC constRep);
+
+  bool solve(RealPC rc1, RealPC rc2);  // place holder for constraint solver
+
 };
 
 
