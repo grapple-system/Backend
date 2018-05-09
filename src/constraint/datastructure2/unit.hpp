@@ -8,32 +8,29 @@
 #include <string>
 using  namespace std;
 
+struct Pair{
+    int index1;
+    int index2;
+};
+
 class Unit {
 private:
-    string signature;
-    int start;
-    int end;
+    Pair pair1,pair2;
 public:
-    Unit(string signature, int start, int end){
-        this->signature = signature;
-        this->start = start;
-        this->end = end;
+    //(left1, left2), (right1, right2)
+    Unit(int left1, int left2, int right1, int right2){
+        this->pair1.index1 = left1;
+        this->pair1.index2 = left2;
+        this->pair2.index1 = right1;
+        this->pair2.index2 = right2;
     }
 
-    string getSignature(){
-        return signature;
+    Pair getPair1(){
+        return pair1;
     }
 
-    int getStart(){
-        return start;
-    }
-
-    int getEnd(){
-        return end;
-    }
-
-    void setEnd(int end){
-        this->end = end;
+    Pair getPair2(){
+        return pair2;
     }
 };
 

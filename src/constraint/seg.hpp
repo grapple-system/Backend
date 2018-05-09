@@ -21,11 +21,11 @@ class SEGraph {
 private:
     ConstraintMaps constraintMaps;
     list<StateTree> stateTreeList;
-    RealPC retrieveConstraint(PseudoPC constRep);
 
 public:
     SEGraph() {}
-    SEGraph(std::string filename);
+    SEGraph(std::string filename1, std::string filename2);
+    RealPC retrieveConstraint(PseudoPC constRep);
 
     bool solve(RealPC pathConst);  // place holder for constraint solver
 };

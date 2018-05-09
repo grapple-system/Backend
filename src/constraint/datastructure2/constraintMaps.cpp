@@ -4,18 +4,35 @@
 
 #include "constraintMaps.hpp"
 
-ConstraintMaps::ConstraintMaps(string filename) {
-    ifstream input(filename, std::ios::in);
-    if(!input) {
-        cout<<"Failed to open "<<filename<<endl;
+ConstraintMaps::ConstraintMaps(string filename1, string filename2) {
+    ifstream input1(filename1, std::ios::in);
+    ifstream input2(filename2, std::ios::in);
+    if(!input1) {
+        cout<<"Failed to open "<<filename1<<endl;
+        if(!input2) {
+            cout << "Failed to open " << filename2 << endl;
+        }
+        return;
+    }
+    if(!input2){
+        cout<<"Failed to open "<<filename2<<endl;
         return;
     }
     string str;
-    while(getline(input,str)){
+    while(getline(input2,str)){
+        int split1 = str.find_first_of(":");
+        char *i;
+        int index = atoi(str.substr(0, split1-1).c_str());
+        string func = str.substr(split1+2, str.size());
+        //cout<<index<<func<<"#"<<endl;
+        func2indexMap[func]=index;
+    }
+    while(getline(input1,str)){
         string signature = str;
+        int funcIndex = this->func2indexMap[str];
         map<int, ConstraintNode> constraintMap;
         list<string> stateNodeList;
-        while(getline(input,str)){
+        while(getline(input1,str)){
             //cout<<str<<endl;
             if(str.size()==0)break;
             stateNodeList.push_back(str);
@@ -23,7 +40,7 @@ ConstraintMaps::ConstraintMaps(string filename) {
         list<string>::iterator itr = stateNodeList.begin();
         setConstraint(constraintMap, 0, itr);
 
-        this->constraintMaps[signature]=constraintMap;
+        this->constraintMaps[funcIndex]=constraintMap;
         stateNodeList.clear();
         //constraintMap.clear();
     }
@@ -38,21 +55,25 @@ ConstraintMaps::ConstraintMaps(string filename) {
 }
 
 string ConstraintMaps::getConstraint(Unit unit) {
-    string str = unit.getSignature();
-    int start = unit.getStart();
-    int end = unit.getEnd();
+    int funcIndex = unit.getPair1().index1;
+    int start = unit.getPair1().index2;
+    int end = unit.getPair2().index2;
+    if(!constraintMaps[funcIndex].size()) return NULL;
+
     if(start == (end-1)/2){
         if(end == start*2+1){
-            return constraintMaps[unit.getSignature()][start].getConditional();
+            return constraintMaps[funcIndex][start].getConditional();
         } else{
-            return "!"+constraintMaps[unit.getSignature()][start].getConditional();
+            return "(not "+constraintMaps[funcIndex][start].getConditional()+")";
         }
-    }else if(start < (end-1)/2){
-        return getConstraint(Unit(str, start, (end-1)/2)) + " && " + getConstraint(Unit(str, (end-1)/2, end));
-    }else {
-        // error
-        return "";
     }
+    return "";
+//    else if(start < (end-1)/2){
+//        return getConstraint(Unit(str, start, (end-1)/2)) + " && " + getConstraint(Unit(str, (end-1)/2, end));
+//    }else {
+//        // error
+//        return "";
+//    }
 }
 
 string ConstraintMaps::getConstraint(list<Unit> units) {
@@ -60,7 +81,9 @@ string ConstraintMaps::getConstraint(list<Unit> units) {
     string str = getConstraint(*itr);
     ++itr;
     while(itr != units.end()){
-        str.append(" && " + getConstraint(*itr));
+        string str = getConstraint(*itr);
+        if(str.size())
+            str.append(" && " + getConstraint(*itr));
         ++itr;
     }
     return str;
@@ -96,7 +119,7 @@ void ConstraintMaps::setConstraint(map<int, ConstraintNode> &constraintMap, int 
 }
 
 void ConstraintMaps::print() {
-    map<string, map<int, ConstraintNode>>::iterator itr0 = constraintMaps.begin();
+    map<int, map<int, ConstraintNode>>::iterator itr0 = constraintMaps.begin();
     while(itr0!=constraintMaps.end()){
         cout<<itr0->first<<endl;
         map<int, ConstraintNode>::iterator itr1 = itr0->second.begin();
