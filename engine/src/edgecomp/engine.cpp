@@ -27,7 +27,7 @@ void updatePartitions(ComputationSet compsets[], Partition &p1, Partition &p2, v
 
 
 /**
- * runs the edge computation for graspan
+ * runs the edge computation
  */
 // long run_computation(Context &context)
 long run_computation(Context &context, SEGraph* seg)

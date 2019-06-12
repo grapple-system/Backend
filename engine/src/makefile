@@ -19,6 +19,6 @@ UTIL=../test/timer.cpp Library/Logger.cpp
 PSA=../../constraint/pseudoPC.cpp ../../constraint/realPC.cpp ../../constraint/seg.cpp ../../constraint/datastructures/constraintMaps.cpp
 
 ##### build rules #####
-comp: dispatcher/graspan.cpp $(PREP) $(LOADER) $(COMPUTATION) $(DATASTRUCTS) $(UTIL) $(PSA)
-	$(CC) dispatcher/graspan.cpp $(PREP) $(LOADER) $(COMPUTATION) $(DATASTRUCTS) $(UTIL) $(PSA) -o ../bin/comp -I/usr/local/include -L/usr/local/lib -O2 -ggdb -lboost_thread -lpthread -lboost_system -lz3
+comp: dispatcher/main.cpp $(PREP) $(LOADER) $(COMPUTATION) $(DATASTRUCTS) $(UTIL) $(PSA)
+	$(CC) dispatcher/main.cpp $(PREP) $(LOADER) $(COMPUTATION) $(DATASTRUCTS) $(UTIL) $(PSA) -o ../bin/comp -I/usr/local/include -L/usr/local/lib -O2 -ggdb -lboost_thread -lpthread -lboost_system -lz3
 

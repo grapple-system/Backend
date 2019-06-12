@@ -47,11 +47,11 @@ int main(int argc, char *argv[])
 	delete seg;
 
 	graspanTimer.endTimer();
-	std::cerr << "===== GRASPAN FINISHED =====" << endl;
+	std::cerr << "===== BACKEND FINISHED =====" << endl;
 	cout << "TOTAL PREPROC TIME: " << prepTimer.hmsFormat() << endl << endl;
 	cout << "TOTAL NUM NEW EDGE: " << newEdges << endl;
 	cout << "TOTAL COMPUTE TIME: " << compTimer.hmsFormat() << endl << endl;
-	cout << "TOTAL GRASPAN TIME: " << graspanTimer.hmsFormat() << "\n" << endl;
+	cout << "TOTAL TIME: " << graspanTimer.hmsFormat() << "\n" << endl;
 
 	return 0;
 }
